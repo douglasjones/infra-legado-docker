@@ -1,0 +1,23 @@
+# Map of client slug -> PHP/Web container responsible for serving the app
+# Review this file whenever a new client is added or a compose file changes.
+
+america-servis=america-php
+atc=atc-php
+atc-ronda=atc-ronda-php
+brasil-servis=brasil-php
+edm=edm-php
+gt=gt-php
+hemil=hemil-php
+jmr=jmr-php
+restaurante=restaurante-php
+vistoriza=vistoriza-legado-web
+vistoriza_at=vistoriza-at-php
+vs-solucoes=vs-solucoes-php
+
+# Clients without validated runtime container yet
+consultor=
+cstelefonia=
+gt-ronda=
+jrm-ronda=
+rctelefonia=
+
