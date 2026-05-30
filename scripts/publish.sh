@@ -288,7 +288,7 @@ for rel in "${FILES_TO_SYNC[@]}"; do
   SYNCED_ROWS+=("$rel")
 done
 
-for rel in "${FILES_TO_DELETE[@]}"; do
+for rel in "${FILES_TO_DELETE[@]:-}"; do
   [[ -z "$rel" ]] && continue
   remote_file="$VPS_BASE/$CLIENT/$rel"
   if $DRY_RUN; then
@@ -364,7 +364,7 @@ mkdir -p "$MANIFEST_DIR"
   for rel in "${SYNCED_ROWS[@]}"; do
     echo "  - $rel"
   done
-  for rel in "${FILES_TO_DELETE[@]}"; do
+  for rel in "${FILES_TO_DELETE[@]:-}"; do
     [[ -n "$rel" ]] && echo "  - DELETE $rel"
   done
   echo
