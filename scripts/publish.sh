@@ -184,8 +184,11 @@ write_array_to_file() {
   : > "$output_file"
   local item=""
   for item in "$@"; do
-    [[ -n "$item" ]] && printf '%s\n' "$item" >> "$output_file"
+    if [[ -n "$item" ]]; then
+      printf '%s\n' "$item" >> "$output_file"
+    fi
   done
+  return 0
 }
 
 build_local_md5_file() {
