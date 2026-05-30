@@ -36,6 +36,8 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m'
 
+TMP_FILES=()
+
 usage() {
   cat <<'EOF'
 Usage:
@@ -126,11 +128,6 @@ local_md5() {
   fi
 }
 
-remote_md5() {
-  local file="$1"
-  ssh "$VPS_USER@$VPS_HOST" "if [ -f '$file' ]; then if command -v md5sum >/dev/null 2>&1; then md5sum '$file' | cut -d' ' -f1; else md5 -q '$file'; fi; fi"
-}
-
 last_release_tag() {
   git tag --list "release/${CLIENT}/*" --sort=-creatordate | head -1
 }
@@ -145,6 +142,20 @@ current_commit_short() {
 
 current_commit_msg() {
   git log -1 --pretty="%s"
+}
+
+cleanup() {
+  local file=""
+  for file in "${TMP_FILES[@]:-}"; do
+    [[ -n "$file" && -f "$file" ]] && rm -f "$file"
+  done
+}
+
+make_temp_file() {
+  local file=""
+  file="$(mktemp)"
+  TMP_FILES+=("$file")
+  printf '%s\n' "$file"
 }
 
 read_lines_into_array() {
@@ -167,6 +178,52 @@ pending_changes_for_scope() {
     "docs/deploy-process-v2.md"
 }
 
+write_array_to_file() {
+  local output_file="$1"
+  shift
+  : > "$output_file"
+  local item=""
+  for item in "$@"; do
+    [[ -n "$item" ]] && printf '%s\n' "$item" >> "$output_file"
+  done
+}
+
+build_local_md5_file() {
+  local output_file="$1"
+  shift
+  : > "$output_file"
+  local rel=""
+  local local_file=""
+  local local_hash=""
+  for rel in "$@"; do
+    [[ -z "$rel" ]] && continue
+    local_file="$CLIENT_DIR/$rel"
+    [[ -f "$local_file" ]] || continue
+    local_hash="$(local_md5 "$local_file")"
+    printf 'SYNC|%s|%s\n' "$rel" "$local_hash" >> "$output_file"
+  done
+}
+
+lookup_report_value() {
+  local report_file="$1"
+  local kind="$2"
+  local rel="$3"
+  awk -F'|' -v kind="$kind" -v rel="$rel" '$1 == kind && $2 == rel { print $3; exit }' "$report_file"
+}
+
+generate_remote_validation_report() {
+  local payload_file="$1"
+  local report_file="$2"
+  ssh "$VPS_USER@$VPS_HOST" "BASE_PATH='$VPS_BASE/$CLIENT'; hash_file(){ local file=\"\$1\"; if command -v md5sum >/dev/null 2>&1; then md5sum \"\$file\" | cut -d' ' -f1; else md5 -q \"\$file\"; fi; }; while IFS='|' read -r kind rel; do [ -n \"\$kind\" ] || continue; file=\"\$BASE_PATH/\$rel\"; case \"\$kind\" in SYNC) if [ -f \"\$file\" ]; then printf 'SYNC|%s|%s\n' \"\$rel\" \"\$(hash_file \"\$file\")\"; else printf 'SYNC|%s|MISSING\n' \"\$rel\"; fi ;; DELETE) if [ ! -e \"\$file\" ]; then printf 'DELETE|%s|OK_DELETE\n' \"\$rel\"; else printf 'DELETE|%s|FAIL_DELETE\n' \"\$rel\"; fi ;; esac; done" < "$payload_file" > "$report_file"
+}
+
+run_remote_delete_batch() {
+  local delete_file="$1"
+  ssh "$VPS_USER@$VPS_HOST" "BASE_PATH='$VPS_BASE/$CLIENT'; while IFS= read -r rel; do [ -n \"\$rel\" ] || continue; rm -f \"\$BASE_PATH/\$rel\"; done" < "$delete_file"
+}
+
+trap cleanup EXIT
+
 container_name="$(resolve_container || true)"
 
 if [[ -z "$container_name" ]]; then
@@ -183,16 +240,21 @@ if $AUDIT_ONLY; then
   echo
 
   read_lines_into_array TRACKED_FILES < <(git ls-files "clients/$CLIENT/app" | sed "s#^clients/$CLIENT/##")
+  AUDIT_PAYLOAD_FILE="$(make_temp_file)"
+  AUDIT_REPORT_FILE="$(make_temp_file)"
+  write_array_to_file "$AUDIT_PAYLOAD_FILE" "${TRACKED_FILES[@]}"
+  awk 'NF { printf "SYNC|%s\n", $0 }' "$AUDIT_PAYLOAD_FILE" > "${AUDIT_PAYLOAD_FILE}.kinds"
+  TMP_FILES+=("${AUDIT_PAYLOAD_FILE}.kinds")
+  generate_remote_validation_report "${AUDIT_PAYLOAD_FILE}.kinds" "$AUDIT_REPORT_FILE"
   FAIL_COUNT=0
   OK_COUNT=0
   for rel in "${TRACKED_FILES[@]}"; do
     local_file="$CLIENT_DIR/$rel"
-    remote_file="$VPS_BASE/$CLIENT/$rel"
     if [[ ! -f "$local_file" ]]; then
       continue
     fi
     local_hash="$(local_md5 "$local_file")"
-    remote_hash="$(remote_md5 "$remote_file")"
+    remote_hash="$(lookup_report_value "$AUDIT_REPORT_FILE" "SYNC" "$rel")"
     if [[ "$local_hash" == "$remote_hash" && -n "$remote_hash" ]]; then
       OK_COUNT=$((OK_COUNT + 1))
     else
@@ -262,49 +324,61 @@ echo
 declare -a VALIDATION_ROWS=()
 declare -a SYNCED_ROWS=()
 VALIDATION_FAIL=false
+SYNC_LIST_FILE="$(make_temp_file)"
+DELETE_LIST_FILE="$(make_temp_file)"
+VALIDATION_INPUT_FILE="$(make_temp_file)"
+LOCAL_HASH_FILE="$(make_temp_file)"
+REMOTE_REPORT_FILE="$(make_temp_file)"
 
-for rel in "${FILES_TO_SYNC[@]}"; do
-  [[ -z "$rel" ]] && continue
-  local_file="$CLIENT_DIR/$rel"
-  remote_file="$VPS_BASE/$CLIENT/$rel"
+write_array_to_file "$SYNC_LIST_FILE" "${FILES_TO_SYNC[@]}"
+write_array_to_file "$DELETE_LIST_FILE" "${FILES_TO_DELETE[@]:-}"
+build_local_md5_file "$LOCAL_HASH_FILE" "${FILES_TO_SYNC[@]}"
 
-  if $DRY_RUN; then
-    printf 'DRY-RUN upload %s\n' "$rel"
-    VALIDATION_ROWS+=("SKIP|$rel||")
-    continue
-  fi
+awk 'NF { printf "SYNC|%s\n", $0 }' "$SYNC_LIST_FILE" > "$VALIDATION_INPUT_FILE"
+awk 'NF { printf "DELETE|%s\n", $0 }' "$DELETE_LIST_FILE" >> "$VALIDATION_INPUT_FILE"
 
-  ssh "$VPS_USER@$VPS_HOST" "mkdir -p '$(dirname "$remote_file")'"
-  rsync -az --checksum "$local_file" "$VPS_USER@$VPS_HOST:$remote_file"
-  local_hash="$(local_md5 "$local_file")"
-  remote_hash="$(remote_md5 "$remote_file")"
+RSYNC_ARGS=(-az --checksum --files-from="$SYNC_LIST_FILE")
+if $DRY_RUN; then
+  RSYNC_ARGS+=(-n)
+fi
 
-  if [[ "$local_hash" == "$remote_hash" && -n "$remote_hash" ]]; then
-    VALIDATION_ROWS+=("OK|$rel|$local_hash|$remote_hash")
-  else
-    VALIDATION_ROWS+=("FAIL|$rel|$local_hash|$remote_hash")
-    VALIDATION_FAIL=true
-  fi
-  SYNCED_ROWS+=("$rel")
-done
+rsync "${RSYNC_ARGS[@]}" "$CLIENT_DIR/" "$VPS_USER@$VPS_HOST:$VPS_BASE/$CLIENT/"
 
-for rel in "${FILES_TO_DELETE[@]:-}"; do
-  [[ -z "$rel" ]] && continue
-  remote_file="$VPS_BASE/$CLIENT/$rel"
-  if $DRY_RUN; then
-    printf 'DRY-RUN delete %s\n' "$rel"
-    VALIDATION_ROWS+=("SKIP_DELETE|$rel||")
-    continue
-  fi
+if $DRY_RUN; then
+  for rel in "${FILES_TO_SYNC[@]}"; do
+    [[ -n "$rel" ]] && VALIDATION_ROWS+=("SKIP|$rel||")
+  done
+  for rel in "${FILES_TO_DELETE[@]:-}"; do
+    [[ -n "$rel" ]] && VALIDATION_ROWS+=("SKIP_DELETE|$rel||")
+  done
+else
+  run_remote_delete_batch "$DELETE_LIST_FILE"
+  generate_remote_validation_report "$VALIDATION_INPUT_FILE" "$REMOTE_REPORT_FILE"
 
-  ssh "$VPS_USER@$VPS_HOST" "rm -f '$remote_file'"
-  if ssh "$VPS_USER@$VPS_HOST" "[ ! -e '$remote_file' ]"; then
-    VALIDATION_ROWS+=("OK_DELETE|$rel||")
-  else
-    VALIDATION_ROWS+=("FAIL_DELETE|$rel||")
-    VALIDATION_FAIL=true
-  fi
-done
+  for rel in "${FILES_TO_SYNC[@]}"; do
+    [[ -z "$rel" ]] && continue
+    local_hash="$(lookup_report_value "$LOCAL_HASH_FILE" "SYNC" "$rel")"
+    remote_hash="$(lookup_report_value "$REMOTE_REPORT_FILE" "SYNC" "$rel")"
+    if [[ "$local_hash" == "$remote_hash" && -n "$remote_hash" && "$remote_hash" != "MISSING" ]]; then
+      VALIDATION_ROWS+=("OK|$rel|$local_hash|$remote_hash")
+    else
+      VALIDATION_ROWS+=("FAIL|$rel|$local_hash|$remote_hash")
+      VALIDATION_FAIL=true
+    fi
+    SYNCED_ROWS+=("$rel")
+  done
+
+  for rel in "${FILES_TO_DELETE[@]:-}"; do
+    [[ -z "$rel" ]] && continue
+    delete_status="$(lookup_report_value "$REMOTE_REPORT_FILE" "DELETE" "$rel")"
+    if [[ "$delete_status" == "OK_DELETE" ]]; then
+      VALIDATION_ROWS+=("OK_DELETE|$rel||")
+    else
+      VALIDATION_ROWS+=("FAIL_DELETE|$rel||")
+      VALIDATION_FAIL=true
+    fi
+  done
+fi
 
 echo -e "${BLUE}Validation report${NC}"
 for row in "${VALIDATION_ROWS[@]}"; do
