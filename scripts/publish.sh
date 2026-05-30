@@ -147,6 +147,16 @@ current_commit_msg() {
   git log -1 --pretty="%s"
 }
 
+read_lines_into_array() {
+  local __target_var="$1"
+  local __line=""
+
+  eval "$__target_var=()"
+  while IFS= read -r __line; do
+    eval "$__target_var+=(\"\$__line\")"
+  done
+}
+
 pending_changes_for_scope() {
   git status --porcelain -- \
     "clients/$CLIENT/app" \
@@ -172,7 +182,7 @@ if $AUDIT_ONLY; then
   echo "Last commit:   $(current_commit_short) - $(current_commit_msg)"
   echo
 
-  mapfile -t TRACKED_FILES < <(git ls-files "clients/$CLIENT/app" | sed "s#^clients/$CLIENT/##")
+  read_lines_into_array TRACKED_FILES < <(git ls-files "clients/$CLIENT/app" | sed "s#^clients/$CLIENT/##")
   FAIL_COUNT=0
   OK_COUNT=0
   for rel in "${TRACKED_FILES[@]}"; do
@@ -210,20 +220,20 @@ if [[ -n "$SINGLE_FILE" ]]; then
     echo -e "${RED}File not found: $CLIENT_DIR/$SINGLE_FILE${NC}"
     exit 1
   fi
-  mapfile -t FILES_TO_SYNC < <(printf '%s\n' "$SINGLE_FILE")
-  mapfile -t FILES_TO_DELETE < <(printf '')
+  read_lines_into_array FILES_TO_SYNC < <(printf '%s\n' "$SINGLE_FILE")
+  FILES_TO_DELETE=()
 else
   if [[ -n "$LAST_TAG" ]]; then
-    mapfile -t FILES_TO_SYNC < <(
+    read_lines_into_array FILES_TO_SYNC < <(
       git diff --diff-filter=ACMRT --name-only "$LAST_TAG" HEAD -- "clients/$CLIENT/app" \
         | sed "s#^clients/$CLIENT/##"
     )
-    mapfile -t FILES_TO_DELETE < <(
+    read_lines_into_array FILES_TO_DELETE < <(
       git diff --diff-filter=D --name-only "$LAST_TAG" HEAD -- "clients/$CLIENT/app" \
         | sed "s#^clients/$CLIENT/##"
     )
   else
-    mapfile -t FILES_TO_SYNC < <(
+    read_lines_into_array FILES_TO_SYNC < <(
       git ls-files "clients/$CLIENT/app" \
         | sed "s#^clients/$CLIENT/##"
     )
