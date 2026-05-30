@@ -837,3 +837,9 @@ Acesso:
 - `http://127.0.0.1:8086/login`
 - usuario validado: `admin`
 - senha validada: `@Gpres_25`
+## [2026-05-30 11:05] Publish - brasil-servis
+- Commit: cb06925 - fix: corrige write_array_to_file para set -e
+- Reason: Piloto Git Deploy Brasil Servis
+- Container: brasil-php
+- Manifest: /Volumes/MACWORK/gpros-workspace/03-clients/active/facilities/migracao/infra-legado-docker/clients/brasil-servis/docs/releases/release-2026-05-30-11-05-26.txt
+
