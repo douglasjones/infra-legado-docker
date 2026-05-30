@@ -1,0 +1,148 @@
+.datePicker {
+	border:		1px solid WindowText !important;
+	background:	Window !important;
+	width:		170px !important;
+	padding:	0px !important;
+	cursor:		default !important;
+	-moz-user-focus: normal !important;
+}
+
+
+.datePicker td {
+	font:			smallcaption !important;
+/*	font:			Caption !important;*/
+	text-align:		center !important;
+	color:			WindowText !important;
+	cursor:			default !important;
+	font-weight:	normal !important;
+	-moz-user-select:	none !important;
+	padding:		0 !important;
+}
+
+.datePicker td.red {
+	color:			red !important;
+}
+
+.datePicker .header {
+	background:		ActiveCaption !important;
+	padding:		3px !important;
+	border-bottom:	1px solid WindowText !important;
+}
+
+.datePicker .headerTable {
+	background:		ActiveCaption !important;
+	width:			100% !important;
+}
+
+.datePicker .headerTable tbody {
+	background:		ActiveCaption !important;
+}
+
+.datePicker .footer {
+	padding: 3px !important;
+}
+
+.datePicker .footerTable {
+	width:		100% !important;
+}
+
+.datePicker .grid {
+	padding:	3px !important;
+}
+.datePicker .gridTable {
+	width:	100% !important;
+}
+
+.datePicker .gridTable td {
+	width:	14.3% !important;
+}
+
+.datePicker .gridTable .daysRow td {
+	font-weight:	bold !important;
+	border-bottom:	1px solid ThreeDDarkShadow !important;
+}
+
+.datePicker .grid .gridTable .upperLine {
+	width:		100% !important;
+	height:		2px !important;
+	overflow:	hidden !important;
+	background:	transparent !important;
+}
+
+.datePicker td.today {
+	font-weight:	bold !important;
+}
+
+.datePicker td.selected {
+	background:		Highlight;
+	color:			HighlightText !important;
+}
+
+.datePicker td.labelContainer {
+	width:	100% !important;
+}
+
+.datePicker td .topLabel {
+	color:			CaptionText !important;
+	display:		block !important;
+	font-weight:	bold !important;
+	width:			100% !important;
+	text-decoration:	none !important;
+
+}
+
+.datePicker td.filler {
+	width:			100% !important;
+}
+
+.datePicker button {
+	border-width:	1px !important;
+	font:			Caption !important;
+	font-weight:	normal !important;
+	display:		block !important;
+}
+
+.datePicker .previousButton {
+	background:	buttonface url("arrow.left.png") no-repeat center center !important;
+}
+
+.datePicker .nextButton {
+	background:	buttonface url("arrow.right.png") no-repeat center center !important;
+}
+.datePicker .previousButton,
+.datePicker .nextButton {
+	width:			14px !important;
+	height:			14px !important;
+}
+
+.datePicker .todayButton,
+.datePicker .noneButton {
+	width:	50px !important;
+}
+
+
+.datePicker .labelPopup {
+	position:	absolute !important;
+	min-width:	130px !important;
+	background:	Window !important;
+	border:		1px solid WindowText !important;
+	padding:	1px !important;
+}
+
+.datePicker .labelPopup a {
+	width:				100% !important;
+	display:			block !important;
+	color:				WindowText !important;
+	text-decoration:	none !important;
+	white-space:		nowrap !important;
+}
+
+.datePicker .labelPopup a:hover {
+	background:	Highlight !important;
+	color:		HighlightText !important;
+}
+
+.datePicker .labelPopup a.selected {
+	font-weight:	bold !important;
+}
+

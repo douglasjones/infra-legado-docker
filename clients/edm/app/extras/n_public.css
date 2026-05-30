@@ -1,0 +1,149 @@
+@charset "utf-8";
+/* CSS Document */
+BODY {
+    background: #e4e4e4; 
+	margin-top : 0;
+	margin-right : 0;
+	margin-left : 0;
+	margin-bottom : 0;
+}
+/*TITULO*/
+.titulo_div{
+	background:#000066;
+	width:99%;
+	margin: 0 auto;
+	margin-top:5px;
+	border: 0.5mm solid #000066;}
+
+.titulo_sub_div{
+	align: center;  
+        background:#ffffff;
+	width:99%;
+	margin: 0 auto;}
+
+
+.titulo_formulario_pai{
+	color:#CCCCCC;
+	text-align :left;
+	margin-top:auto;
+	font-style : normal ;
+	text-decoration : none ;
+	font-size : 1.3em ;
+	font-family : 'LeagueGothicRegular' ;}
+
+.titulo_formulario_filho{
+	color:#f5f5f5;
+	text-align :left;
+	margin-top:auto;
+	font-style : normal ;
+	text-decoration : none ;
+	font-size : 1.1em ;
+	font-family : 'LeagueGothicRegular' ;}
+	
+/*FORMULARIO*/
+
+.formulario_div{
+	background:#FFF;
+	width:99%;
+	margin: 0 auto;
+	border: 0.5mm solid #000066;}
+
+.formulario_sub_div{
+	background:#CCCCCC;
+	width:99%;
+	margin: 0 auto;
+        border: 0.5mm solid #000066;}
+
+.formulario_titulo{        
+	color:#000066;
+	text-align :left;
+	margin-top:auto;        
+	font-style : normal ;
+	text-decoration : none ;
+	font-size : 20px ;
+	font-family : 'LeagueGothicRegular' ;}
+
+
+.formulario_sub_titulo {        
+	color:#666666;
+	text-align : center ;
+	margin-left: 5px;
+	font-style : normal ;
+	text-decoration : none ;
+	font-size : 15px ;
+	font-family : 'LeagueGothicRegular' ;}
+
+
+.formulario_texto_label{
+	color:#666666;
+	text-align : left ;
+	margin-left: 5px;
+	font-style : normal ;
+	text-decoration : none ;
+	font-size : 15px ;
+	font-family : 'LeagueGothicRegular' ;}
+
+.formulario_imput_text {
+        color:#333333;
+	border: 0.5mm solid #000066;
+	height: 1em;
+	font-size: 15px;          
+	letter-spacing: 0px;
+        font-family : 'LeagueGothicRegular';}
+
+.formulario_textarea {
+        color:#333333;
+	border: 0.5mm solid #000066;
+	font-size: 14px;          
+	letter-spacing: 0px;
+        font-family : 'Verdana, Arial, Helvetica, sans-serif';}
+
+.formulario_select{        
+        color:#333333;
+	border: 0.5mm solid #000066;
+	height: 1.5em;
+	font-size: 13px;          
+	letter-spacing: 0px;
+        font-family : 'Verdana, Arial, Helvetica, sans-serif';}
+	
+/*BOTÃO*/
+.botao_div{	
+	width:99%;
+	margin: 0 auto;}
+
+.botao{
+        background:#ffffff;
+        color:#000066;
+        font-size: 13px; 
+	border: 0.6mm solid #000066;}
+
+.hr{
+    height:1px;
+    border:none;
+    color:#000099; 
+    background-color:#000099;
+    margin-top: 0px; 
+    margin-bottom: 0px;
+}
+.espcao_br {
+line-height: 0.3em;
+}
+
+/*FORMULARIO*/
+
+.formulario_div{
+	background:#FFF;
+	width:99%;
+	margin: 0 auto;
+	border: 0mm solid #666666;}
+
+
+
+
+
+
+
+
+
+	
+

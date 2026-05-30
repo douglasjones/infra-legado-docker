@@ -1,0 +1,76 @@
+# Proposta de .gitignore raiz para o repositório infra-legado-docker
+# Objetivo: versionar infraestrutura, código-fonte útil e documentação,
+# excluindo artefatos pesados, dados de produção e arquivos gerados.
+
+# Sistema / editor
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/
+*.swp
+*.swo
+*.orig
+WS_FTP.LOG
+error_log
+
+# Logs e temporários
+*.log
+logs/
+log/
+tmp/
+temp/
+cache/
+.cache/
+
+# Dependências e build
+vendor/
+node_modules/
+dist/
+build/
+.next/
+
+# Runtime / uploads
+storage/
+uploads/
+public/uploads/
+
+# Arquivos sensíveis de ambiente
+.env
+.env.local
+.env.development
+.env.test
+
+# Dumps, backups e pacotes pesados
+*.sql
+*.sql.gz
+*.dump
+*.tar
+*.tar.gz
+*.zip
+*.7z
+*.rar
+
+# Regras específicas do mono-repo
+clients/*/database/
+clients/*/logs/
+clients/*/source/
+clients/*/app/vendor/
+clients/*/app/node_modules/
+clients/*/app/.next/
+clients/*/app/storage/
+clients/*/app/uploads/
+clients/*/app/public/uploads/
+clients/*/app/public/assets/face-api/dist/
+clients/*/env/
+clients/*/app/**/error_log
+clients/*/app/**/doc/
+clients/*/app/app/src/docs/
+clients/*/app/app/src/docs/ponto/
+
+# Referências, rebuilds e backups auxiliares dentro de source/
+clients/*/source/bkp/
+clients/*/source/tar/
+clients/*/source/tmp_analysis/
+clients/*/source/tmp_rebuild/
+clients/*/source/referencias/

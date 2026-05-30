@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Registro de Ronda</title>
+    <style>
+        :root {
+            --azul: #144b7f;
+            --azul-escuro: #0d3358;
+            --cinza: #f4f6f8;
+            --borda: #d8dee6;
+            --texto: #20242a;
+            --verde: #127c4a;
+            --vermelho: #b42318;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: var(--cinza);
+            color: var(--texto);
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .panel {
+            width: 100%;
+            max-width: 460px;
+            background: #fff;
+            border: 1px solid var(--borda);
+            border-radius: 8px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+            overflow: hidden;
+        }
+
+        .panel-header {
+            background: var(--azul);
+            color: #fff;
+            padding: 22px 24px;
+        }
+
+        .panel-header h1 {
+            margin: 0;
+            font-size: 22px;
+            line-height: 1.25;
+        }
+
+        .panel-body {
+            padding: 24px;
+        }
+
+        .info {
+            margin-bottom: 18px;
+        }
+
+        .label {
+            display: block;
+            color: #5d6673;
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+
+        .value {
+            display: block;
+            font-size: 17px;
+            font-weight: 700;
+            line-height: 1.35;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 96px;
+            resize: vertical;
+            border: 1px solid var(--borda);
+            border-radius: 6px;
+            padding: 10px 12px;
+            font: inherit;
+        }
+
+        button {
+            width: 100%;
+            border: 0;
+            border-radius: 6px;
+            background: var(--azul-escuro);
+            color: #fff;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 700;
+            margin-top: 18px;
+            padding: 13px 16px;
+        }
+
+        button:disabled {
+            cursor: default;
+            opacity: .7;
+        }
+
+        .message {
+            display: none;
+            border-radius: 6px;
+            font-weight: 700;
+            line-height: 1.35;
+            margin-top: 16px;
+            padding: 12px;
+        }
+
+        .message.success {
+            display: block;
+            background: #e8f5ee;
+            color: var(--verde);
+        }
+
+        .message.error {
+            display: block;
+            background: #fdeceb;
+            color: var(--vermelho);
+        }
+
+        .erro-inicial {
+            background: #fdeceb;
+            color: var(--vermelho);
+            border-radius: 6px;
+            font-weight: 700;
+            padding: 12px;
+        }
+    </style>
+</head>
+<body>
+    <main class="page">
+        <section class="panel">
+            <header class="panel-header">
+                <h1>Registro de Ronda</h1>
+            </header>
+            <div class="panel-body">
+                {% if erro %}
+                    <div class="erro-inicial">{{ erro }}</div>
+                {% else %}
+                    <form id="frmRegistroRonda">
+                        <input type="hidden" id="qr_code_pk" name="qr_code_pk" value="{{ qr_code_pk }}">
+
+                        <div class="info">
+                            <span class="label">Cliente</span>
+                            <span class="value">{{ ponto.ds_cliente ?: '-' }}</span>
+                        </div>
+
+                        <div class="info">
+                            <span class="label">Posto de Trabalho</span>
+                            <span class="value">{{ ponto.ds_lead }}</span>
+                        </div>
+
+                        <div class="info">
+                            <span class="label">Local</span>
+                            <span class="value">{{ ponto.ds_ponto }}</span>
+                        </div>
+
+                        <label class="label" for="ds_ronda">Observação</label>
+                        <textarea id="ds_ronda" name="ds_ronda" maxlength="100"></textarea>
+
+                        <button type="submit" id="cmdRegistrarRonda">Registrar Ronda</button>
+                        <div id="msgRegistroRonda" class="message"></div>
+                    </form>
+                {% endif %}
+            </div>
+        </section>
+    </main>
+    <script src="/assets/js/local/ronda_registro.js?v=1"></script>
+</body>
+</html>

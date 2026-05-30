@@ -1,0 +1,123 @@
+BODY
+{
+    FONT-FAMILY: Arial;
+    FONT-SIZE: 7pt
+}
+.cabecalho
+{
+    FONT-FAMILY: Arial;
+    FONT-SIZE: 10pt;
+    FONT-WEIGHT: bold;
+}
+.cabecalho1
+{
+    FONT-FAMILY: Arial;
+    FONT-SIZE: 7pt;
+	TEXT-ALIGN: center
+}
+.data
+{
+    FONT-FAMILY: Arial;
+    FONT-SIZE: 10pt;
+    FONT-WEIGHT: bold;
+    TEXT-ALIGN: right
+}
+.personalizado
+{
+    FONT-FAMILY: Arial;
+    FONT-SIZE: 10pt;
+}
+.titulo
+{
+    FONT-FAMILY: Arial;
+    FONT-SIZE: 10pt;
+    FONT-WEIGHT: bold;
+	TEXT-ALIGN: center
+}
+.titulo1
+{
+    FONT-FAMILY: Arial;
+    FONT-SIZE: 10pt;
+    FONT-WEIGHT: bold;
+	TEXT-ALIGN: LEFT
+}
+.texto
+{
+    FONT-FAMILY: Arial;
+    FONT-SIZE: 10pt;
+	TEXT-ALIGN: justify
+}
+.total
+{    
+    FONT-FAMILY: Arial;
+    FONT-SIZE: 10pt;
+    FONT-WEIGHT: bold;
+	color : #000066
+}
+.total1
+{   
+	BACKGROUND-COLOR: lightgrey; 
+    FONT-FAMILY: Arial;
+    FONT-SIZE: 9pt;
+    FONT-WEIGHT: bold;
+
+}
+.TituloSintetico
+{
+    BACKGROUND-COLOR: lightgrey;
+    FONT-FAMILY: Arial;
+    FONT-SIZE: 7pt;
+    FONT-WEIGHT: bold
+}
+.Detalhe
+{
+    FONT-FAMILY: Arial;
+    FONT-SIZE: 8pt
+}
+.DetalheSintetico
+{
+    FONT-FAMILY: Arial;
+    FONT-SIZE: 7pt
+}
+INPUT
+{
+    BACKGROUND-COLOR: #ffffff;
+    BORDER-BOTTOM: #000000 1px solid;
+    BORDER-LEFT: #000000 1px solid;
+    BORDER-RIGHT: #000000 1px solid;
+    BORDER-TOP: #000000 1px solid;
+    FONT-FAMILY: verdana;
+    FONT-SIZE: 10px
+}
+SELECT
+{
+    BACKGROUND-COLOR: #ffffff;
+    BORDER-BOTTOM: #000000 1px solid;
+    BORDER-LEFT: #000000 1px solid;
+    BORDER-RIGHT: #000000 1px solid;
+    BORDER-TOP: #000000 1px solid;
+    FONT-FAMILY: verdana;
+    FONT-SIZE: 10px
+}
+A
+{
+    COLOR: blue;
+    FONT-FAMILY: Arial;
+    FONT-SIZE: 10pt
+}
+.Data
+{
+    FONT-FAMILY: Arial;
+    FONT-SIZE: 7pt
+}
+TD
+{
+    FONT-FAMILY: Verdana;
+    FONT-SIZE: 8pt
+}
+.Grupo
+{
+    FONT-FAMILY: Arial;
+    FONT-SIZE: 7pt;
+    FONT-WEIGHT: bold
+}

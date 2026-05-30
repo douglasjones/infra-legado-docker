@@ -1,0 +1,65 @@
+services:
+  jmr-php:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: jmr-php
+    platform: linux/amd64
+    working_dir: /var/www/html
+    environment:
+      DB_HOST: jmr-mysql
+      DB_USER: gepros1com_jmr
+      DB_PASSWORD: gepros15082008
+      DB_NAME: gepros1com_jmr
+    volumes:
+      - ../app:/var/www/html
+    networks:
+      - jmr-net
+
+  jmr-nginx:
+    image: nginx:1.24-alpine
+    container_name: jmr-nginx
+    platform: linux/amd64
+    ports:
+      - "8088:80"
+    volumes:
+      - ../app:/var/www/html:ro
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - jmr-php
+    networks:
+      - jmr-net
+
+  jmr-mysql:
+    image: mysql:5.7
+    container_name: jmr-mysql
+    platform: linux/amd64
+    command:
+      - --sql-mode=
+      - --default-time-zone=America/Sao_Paulo
+    ports:
+      - "3314:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: "SENHA"
+      MYSQL_DATABASE: "gepros1com_jmr"
+      MYSQL_USER: "gepros1com_jmr"
+      MYSQL_PASSWORD: "gepros15082008"
+      TZ: "America/Sao_Paulo"
+    volumes:
+      - jmr_mysql_data:/var/lib/mysql
+      - ./docker/mysql/conf.d:/etc/mysql/conf.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin --no-defaults ping -h 127.0.0.1 -uroot -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+    networks:
+      - jmr-net
+
+networks:
+  jmr-net:
+    driver: bridge
+
+volumes:
+  jmr_mysql_data:

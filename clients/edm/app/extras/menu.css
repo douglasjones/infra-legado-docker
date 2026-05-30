@@ -1,0 +1,57 @@
+body {
+	font-family:Arial, Verdana, Helvetica, sans-serif;
+	background-color:#F6F6F6;
+	padding:0;
+	margin:0;
+}
+
+#menu a {
+	text-decoration: none;
+	font-size: 8pt;
+	background-image: url('../images/true.gif');
+	background-repeat: no-repeat;
+	background-position: center left;
+	display: block;
+	padding: 3px;
+	margin-bottom: 2px;
+	_height: 1%;
+}
+
+#menu ul {
+	padding:0;
+	margin:0;
+	list-style:none;
+	width:99%;
+}
+
+#menu ul ul {
+	width:100%;
+}
+
+#menu ul li a {
+	font-weight:bold;
+	padding-left:15px;
+	background-color:#FF9933;
+	color:white;
+}
+
+#menu ul ul li a {
+	font-weight:normal;
+	padding-left:23px;
+	background-color:#FEB341;
+	color:white;
+}
+
+#menu ul ul ul li a {
+	font-weight:normal;
+	background-color:#FF9933;
+	color:white;
+}
+
+#menu .lastitens a {
+	padding-left:30px;
+	font-weight:normal;
+	background-color:#EDEDED;
+	background-image:none;
+	color:black;
+}

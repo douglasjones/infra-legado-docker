@@ -1,0 +1,434 @@
+<table border="0" width="100%">
+                <tr>
+                <td>                      
+                <table border="0" width="100%">
+            <!--TOPO TRAZ LOGO DA EMPRESA E DA OPERADORA DA PROPOSTAS-->
+              <tr class="cabecalho">
+                <td   align="left">
+                  <img alt="" src="#empresa.url_logo;" width="100"  />
+                </td>
+                    <td   align="right">
+                        <img alt="" src="../../images/logo/LOGO CLARO.png" width="90" height="85" />
+                </td>
+               </tr>
+                <!--CAMPOS PARA INFORMAR A DATA DA PROPOSTA-->
+                <tr>
+                 <td  colspan="3" class="data">
+                               #input.string[São Paulo][10];, #input.numero[][2]; de #input.string[Mes][10]; de #input.numero[][4]; 
+                  </td>
+                </tr>
+                <!--ESPCACO-->
+                <tr>
+                               <td  colspan="3" >&nbsp;
+                               
+                  </td>
+                </tr>
+                <!--DADOS DO LEAD E CAMPO PARA INCLISAO DO CONTATO-->
+                <tr>
+                               <td  colspan="3" class="personalizado">
+                               À #lead.razaosocial;<br>
+                        A/C .: #input.string[][40];
+                    </td>
+                </tr>
+                <!--ESPCACO-->
+                <tr>
+                               <td  colspan="3" >&nbsp;
+                               
+                  </td>
+                </tr>
+                <!--TITULO DA PROPOSTA-->
+                <tr>
+                               <td  colspan="3" class="titulo">
+                               Titulo da proposta 
+                    </td>
+                </tr>
+                <!--ESPCACO-->
+                <tr>
+                               <td  colspan="3" >&nbsp;
+                               
+                  </td>
+                </tr>
+                <!--tEXTO DE APRESENTACAO SEMPRE MANTER O COMANDO PARA INCLUIR AUTOMATICO O NOME DA EMPRESA-->
+                <tr>
+                               <td  colspan="3" class="texto">
+                               <BR>
+                            A #empresa.razao_social; e a   Claro pretendem, através da presente proposta, estreitar ainda mais o   relacionamento com o (a) #lead.razaosocial;. Nosso objetivo é propor um pacote   de benefícios adequado às necessidades de sua empresa, agregando um valor   significativo aos seus negócios através de um serviço de telecomunicações   confiável a um preço justo. <BR>
+                            <BR>
+                            <strong>Plano Sob Medida</strong>
+                            <DIV>Ideal para empresas que buscam planos flexíveis   para uso de celulares pelos funcionários. <BR>
+                              O Plano Sob Medida foi criado   especialmente para clientes corporativos. Possui vantagens tarifárias e serviços   que podem ser adaptados às necessidades da sua empresa. <BR>
+                              É composto de uma   assinatura mensal, serviços opcionais e franquia em reais que pode ser   compartilhada entre as linhas Claro da empresa, garantindo melhor aproveitamento   do valor contratado. <BR>
+                              <BR>
+                            <strong>Vantagens do plano: </strong><BR>
+                            Franquia em Reais: Podem ser abatidos da franquia   em reais os seguintes serviços: ligações locais, ligações de longa distância   nacional e internacional (exceto roaming internacional), AD, DSL2, SMS, MMS,   acesso à Secretária Claro, tráfego de dados avulso, ligações recebidas a cobrar   e demais serviços Claro. <BR>
+                              Rollover: A franquia não consumida no mês é   transferida para os 2 meses seguintes (rollover por 60 dias). Estes valores   servirão como um crédito para uso em ligações locais de voz e serviços Claro. O   saldo não consumido sempre terá prioridade de consumo sobre as franquias dos   meses seguintes. <BR>
+                              Valor do minuto excedente é igual ao da franquia contratada <BR>
+                              Serviços pré-ativos: Secretária Claro, Conferência, Espera, Siga-me,   Identificador de chamadas, mais detalhes destes serviços seguem no item <BR>
+                              Possibilidade de contratação de módulos opcionais que se adaptam ao perfil   de cada funcionário <BR>
+                              <BR>
+                          
+                            <STRONG>Módulos</STRONG><BR>
+                                <DIV>#{#qtdetarifazero; &gt; 0}{ Módulo Tarifa Zero   Intra-Grupo: permite chamadas locais (VC1) para outros celulares da sua empresa   (mesmo CNPJ mesmo cliente) a custo zero, com o limite promocional de 2.000   minutos mensais por linha com módulo contratado. <BR>
+                                    <BR>
+                                  }   #{#qtdetarifazerointrarede; &gt; 0}{ Módulo Tarifa Zero Intra-Rede: permite   chamadas locais (VC1) para outros celulares Claro a custo zero, com o limite com   o limite promocional de 2.000 minutos mensais por linha com módulo contratado. <BR>
+                                  <BR>
+                                  } #{#qtdetarifazeronacional; &gt; 0}{ Módulo Tarifa Zero LDN21 (Novo!):   permite chamadas interurbanas (VC2 e VC3) para outros celulares da sua empresa   (mesmo CNPJ mesmo cliente) a custo zero, com o limite de 500 minutos mensais por   linha com módulo contratado. <BR>
+                                  <BR>
+                                  } #{#qtdegestoronline; &gt; 0}{ Gestor on   Line: É uma Solução de gestão que permite o controle e acompanhamento do uso dos   celulares de sua empresa. Com este serviço é possível determinar os dias,   horários e tipos de ligação (Voz, SMS e Dados) com que seus funcionários podem   usar os celulares, assim como a quantidade de minutos a ser utilizada por cada   um. Além das funcionalidades de controle, o Gestor Online também permite a   criação de ramais (discagem abreviada) para comunicação entre as linhas da   empresa. Este serviço é indicado para Empresas que desejam controlar o uso de   celulares pelos seus funcionários. <BR>
+                                  <BR>
+                                  } 
+                              <BR>
+                              <BR>
+                    </td>
+                </tr>
+                <!--CABECALHO 1 TRAZ O LOGO MAIS OS DADOS DA EMPRESA-->
+                                               <tr class="cabecalho">
+                    <td   align="left">
+                      <img alt="" src="#empresa.url_logo;" width="100"  />
+                    </td>
+                        <td   align="right">
+                            <img alt="" src="../../images/logo/LOGO CLARO.png" width="90" height="85" />
+                    </td>
+               </tr>                               
+               <tr>
+                 <td  colspan="3" class="cabecalho1">
+                        #empresa.razao_social;  - Agente Autorizado
+                                                                                              #empresa.endereco; , #empresa.numero; , #empresa.complemento;&nbsp;#empresa.bairro;&nbsp;#empresa.cidade;  #empresa.uf;&nbsp;Brasil&nbsp;Pabx: (#empresa.ddd; ) #empresa.tel;  Fax: (#empresa.ddd_fax; ) #empresa.fax;<br>
+                        Site:#empresa.razao_social;   
+                  </td>
+               </tr>
+               <!--SEGUNDA PAGINA DAODS DO PRODUTO-->
+                <tr>
+                    <td  colspan="3" class="titulo1">
+                        Tarifas
+                    </td>
+                </tr>
+                <!--SEGUNDA PAGINA DAODS DO PRODUTO-->
+                <tr>
+                    <td  colspan="3" class="texto">
+                        As tarifas contratadas no Plano Sob Medida são válidas em toda a área de cobertura da Claro. Os valores são iguais mesmo excedendo valor contratado.
+                    </td>
+                </tr>
+                <!--TABELA DE TARIFAS-->
+                <tr>
+                    <td  colspan="3" class="texto1">
+                        <TABLE align="center" border="1" bordercolor="#999999" width="70%" cellpadding="0" cellspacing="0">
+                                <TR>
+                                  <TD>VC1I...: #vc1;</TD>
+                                  <TD>VC1F...: #vc1f;</TD>
+                                  <TD>VC1M...: #vc1m;</TD>
+                                </TR>
+                                <TR>
+                                  <TD>VC2I...: #vc2i;</TD>
+                                  <TD>VC2F...: #vc2f;</TD>
+                                  <TD>VC2M...: #vc2m;</TD>
+                                </TR>
+                                <TR>
+                                  <TD>VC3I...: #vc3i;</TD>
+                                  <TD>VC3F...: #vc3f;</TD>
+                                  <TD>VC3M...: #vc3m;</TD>
+                                </TR>
+                          </TABLE>
+                    </td>
+                </tr>
+                <!--SCOMPLEMENTO  DAS TAREIFAS-->
+                <tr>
+                    <td  colspan="3" class="TEXTO">
+                        IRV (DSL2)*: ISENTO<br>
+                                                                                              * Interurbano Recebido em Viagem (fora do Estado) 
+                    </td>
+                </tr>
+                <!--ESPCACO-->
+                <tr>
+                               <td  colspan="3" >&nbsp;
+                               
+                  </td>
+                </tr>
+               <!--DADOS DO PLANO-->
+                <tr>
+                    <td  colspan="3" class="texto">
+                                                                                              <table border="1" align="center" width="100%" cellpadding="0" cellspacing="0">  
+                                                                                                  <tr>
+                                                                                                    <TH bgColor="#cccccc" align="middle" class="titulo">PLANO SOB MEDIDA FLEX</TH>
+                                                                                                  </tr>
+                                                                                                  <tr>
+                                                                                                              <td>
+                                                                                                                                             <table align="center" width="90%" border="1" bordercolor="#999999" cellpadding="0" cellspacing="0">
+                                                                                                                                               <tr>
+                                                                                                                                                 <td width="90"  align="center"><strong>FRANQUIA</strong></td>
+                                                                                                                                                             <td width="90"  align="center"><strong>LINHAS</strong></td>
+                                                                                                                                                             <td width="90"  align="center"><strong>ASSIN.</strong></td>
+                                                                                                                                                             <td width="90"  align="center"><strong>% DESC.</strong></td>
+                                                                                                                                                             <td width="129" align="center"><strong>TOTAL ASSIN.</strong></td>
+                                                                                                                                                             <td width="120" align="center"><strong>FRANQUIA+ASSIN.</strong></td>
+                                                                                                                                               </tr>
+                                                                                                                                               
+                                                                                                                                               <tr>
+                                                                                                                                                 <td>#franquia;</td>
+                                                                                                                                                             <td>#qtdelinhas;</td>
+                                                                                                                                                             <td>#assinaturalinha; </td>
+                                                                                                                                                             <td>#descontoassinatura.valor; </td>
+                                                                                                                                                             <td>#totalassinatura; </td>
+                                                                                                                                                             <td>#totalconsumoassinatura; </td>
+                                                                                                                                               </tr>
+                                                                                                                                             </table>                                             
+                                                                                                                             </td>
+                                                                                                              </tr>
+                        </table>
+                      </td>
+                     </tr> 
+                     <!--ESPCACO-->
+                 <tr>
+                    <td  colspan="3" >&nbsp;
+                                               
+                  </td>
+                </tr>   
+                                                                <tr>
+                    <td  colspan="3" >
+                               <table border="1" align="center" width="100%" cellpadding="0" cellspacing="0">  
+                                                                                                  <tr>
+                                                                                                    <TH bgColor="#cccccc" align="middle" class="titulo">MÓDULOS OPCIONAIS</TH>
+                                                                                                  </tr>
+                                                                                                  <tr>
+                                                                                                              <td>
+                                                                                                                                             <table align="center" width="90%" border="1" bordercolor="#999999" cellpadding="0" cellspacing="0">
+                                                                                                                                               <tr>
+                                                                                                                                                 <td width="90"  align="center"><strong>MÓDULO</strong></td>
+                                                                                                                                                             <td width="90"  align="center"><strong>QTDE</strong></td>
+                                                                                                                                                             <td width="90"  align="center"><strong>% DESC.</strong></td>
+                                                                                                                                                             <td width="120"  align="center"><strong>VALOR UNIT.</strong></td>
+                                                                                                                                                             <td width="129" align="center"><strong>TOTAL</strong></td>
+                                                                                                                                               </tr>
+                                                                                                                                               #{#qtdetarifazero; > 0}{  
+                                                                                                                                               <tr>
+                                                                                                                                                 <td>TZ Intra-Grupo</td>
+                                                                                                                                                             <td>#qtdetarifazero;</td>
+                                                                                                                                                             <td>#descontotarifazero.valor;</td>
+                                                                                                                                                             <td>#valortarifazero;</td>
+                                                                                                                                                             <td>#tarifazero;  </td>
+                                                                                                                                               </tr>
+                                      }
+                                                 #{#qtdetarifazerointrarede; > 0}{
+                                                                                                                                               <tr>
+                                                                                                                                                 <td>TZ Intra-Rede</td>
+                                                                                                                                                             <td>#qtdetarifazerointrarede;</td>
+                                                                                                                                                             <td>#descontotarifazerointrarede.valor; </td>
+                                                                                                                                                             <td>#valortarifazerointrarede; </td>
+                                                                                                                                                             <td>#totaltarifazerointrarede;</td>
+                                                                                                                                               </tr>
+                                      }
+                                                                                                                                             </table>                                             
+                                                                                                                             </td>
+                                                                                                              </tr>
+                        </table>        
+     
+                    </td>
+                </tr>   
+                 <!--ESPCACO-->
+                 <tr>
+                    <td  colspan="3" class="titulo">&nbsp;
+                        Total dos Módulos......... #totalmodulos;                    
+                  </td>
+                </tr>   
+                 <tr>
+                    <td  colspan="3" >&nbsp;
+                                               
+                  </td>
+                </tr>      
+                 <tr>
+                    <td  colspan="3" >
+                       
+                                                                                              <table border="1" align="center" width="100%" cellpadding="0" cellspacing="0">  
+                                                                                                  <tr>
+                                                                                                    <TH bgColor="#cccccc" align="middle" class="titulo">TOTAIS</TH>
+                                                                                                  </tr>
+                                                                                                  <tr>
+                                                                                                              <td>
+                                                                                                                                             <table align="center" width="90%" border="1" bordercolor="#999999" cellpadding="0" cellspacing="0">
+                                                                                                                                               <tr>
+                                                                                                                                                 <td width="120"  align="left"><strong>Total Assinatura</strong></td>
+                                        <td>#totalassinatura;</td>
+                                      </tr>
+                                      <tr>
+                                                                                                                                                             <td   align="left"><strong>Total Franquia</strong></td>
+                                        <td>#franquia;</td>
+                                      </tr>
+                                      <tr>
+                                                                                                                                                             <td   align="left"><strong>Total Módulos.</strong></td>
+                                        <td>#totalmodulos;</td>
+                                      </tr>
+                                      <tr>
+                                                                                                                                                             <td   align="left"><strong>Total Plano</strong></td>
+                                        <td>#totalproposta;</td>
+                                      </tr>
+                                                                                                                                             </table>                                             
+                                                                                                                             </td>
+                                                                                                              </tr>
+                        </table>                     
+                  </td>
+                </tr> 
+                <tr>
+                    <td  colspan="3" >&nbsp;
+                                               
+                  </td>
+                </tr>  
+                 <tr>
+                    <td  colspan="3" class="texto" >A Franquia Compartilhada de #franquia; equivale a aproximadamente #minutos; minutos de conversação local. A Franquia é compartilhada entre todos os celulares do Plano e inclui todos os tipos de chamadas (VC1, VC2, VC3 e internacionais) e serviços de valor agregado. 
+Bônus Intra-rede: #bonus;
+<BR>
+<BR>
+Bônus Intra-rede: <strong>#bonus; </strong><BR><br>       
+Bônus Compartilhado válido para ligações VC1 (local) intra-rede dentro e fora da área de registro;
+Créditos do bônus somente são consumidos após o consumo completo da franquia e do roll-over;
+Não há rollover para bônus que não foram consumidos durante o ciclo;              
+                     </td>
+                </tr>
+                 <!--CABECALHO 1 TRAZ O LOGO MAIS OS DADOS DA EMPRESA-->
+                                               <tr class="cabecalho">
+                    <td   align="left">
+                      <img alt="" src="#empresa.url_logo;" width="100"  />
+                    </td>
+                        <td   align="right">
+                            <img alt="" src="../../images/logo/LOGO CLARO.png" width="90" height="85" />
+                    </td>
+               </tr>                               
+               <tr>
+                  <td  colspan="3" class="cabecalho1">
+                        #empresa.razao_social;  - Agente Autorizado
+                                                                                              #empresa.endereco; , #empresa.numero; , #empresa.complemento;&nbsp;#empresa.bairro;&nbsp;#empresa.cidade;  #empresa.uf;&nbsp;Brasil&nbsp;Pabx: (#empresa.ddd; ) #empresa.tel;  Fax: (#empresa.ddd_fax; ) #empresa.fax;<br>
+                        Site:#empresa.razao_social;   
+                  </td>
+               </tr> 
+                 <tr>
+                    <td  colspan="3" >&nbsp;
+                                               
+                  </td>
+                </tr>      
+                  <tr>
+                    <td  colspan="3" >
+                     <table border="1" align="center" width="100%" cellpadding="0" cellspacing="0">  
+                                                                                              <tr>
+                                                                                              <TH bgColor="#cccccc" align="middle" class="titulo">APARELHOS</TH>
+                                                                                                  </tr>
+                                                                                                  <tr>
+                                                                                                              <td>
+                                                                                                                                             <table align="center" width="90%" border="1" bordercolor="#999999" cellpadding="0" cellspacing="0">
+                                                                                                                                               <tr>
+                                                                                                                                                 <td width="150"  align="center"><strong>Modelo do Aparelho</strong></td>
+                                                                                                                                                             <td width="90"  align="center"><strong>Qtde</strong></td>
+                                                                                                                                                             <td width="120"  align="center"><strong>Forma de Aquisição</strong></td>
+                                                                                                                                                             <td width="120"  align="center"><strong>Preço Unitário </strong></td>
+                                                                                                                                                             <td width="120" align="center"><strong>Parcelamento</strong></td>                                                                                                                                                           
+                                                                                                                                               </tr>
+                                                                                                                                               
+                                                                                                                                               <tr>
+                                                                                                                                                 <td>#input.image[/images/aparelhos/./];</td>
+                                                                                                                                                             <td>#input.numero[][2];</td>
+                                                                                                                                                             <td>#input.string[][18];</td>
+                                                                                                                                                             <td>#input.moeda[][10];</td>
+                                                                                                                                                             <td>#input.numero[][10];</td>                                                                                                                                                          
+                                                                                                                                               </tr>
+                                      <tr>
+                                                                                                                                                 <td>#input.image[/images/aparelhos/./];</td>
+                                                                                                                                                             <td>#input.numero[][2];</td>
+                                                                                                                                                             <td>#input.string[][18];</td>
+                                                                                                                                                             <td>#input.moeda[][10];</td>
+                                                                                                                                                             <td>#input.numero[][10];</td>                                                                                                                                                          
+                                                                                                                                               </tr>
+                                      <tr>
+                                                                                                                                                 <td>#input.image[/images/aparelhos/./];</td>
+                                                                                                                                                             <td>#input.numero[][2];</td>
+                                                                                                                                                             <td>#input.string[][18];</td>
+                                                                                                                                                             <td>#input.moeda[][10];</td>
+                                                                                                                                                             <td>#input.numero[][10];</td>                                                                                                                                                          
+                                                                                                                                               </tr>
+                                      <tr>
+                                                                                                                                                 <td>#input.image[/images/aparelhos/./];</td>
+                                                                                                                                                             <td>#input.numero[][2];</td>
+                                                                                                                                                             <td>#input.string[][18];</td>
+                                                                                                                                                             <td>#input.moeda[][10];</td>
+                                                                                                                                                             <td>#input.numero[][10];</td>                                                                                                                                                          
+                                                                                                                                               </tr>                                                                                                                                  
+                                      <tr>
+                                                                                                                                                 <td>#input.image[/images/aparelhos/./];</td>
+                                                                                                                                                             <td>#input.numero[][2];</td>
+                                                                                                                                                             <td>#input.string[][18];</td>
+                                                                                                                                                             <td>#input.moeda[][10];</td>
+                                                                                                                                                             <td>#input.numero[][10];</td>                                                                                                                                                          
+                                                                                                                                               </tr>
+                                                                                                                                             </table>                                             
+                                                                                                                             </td>
+                                                                                                              </tr>
+                                                                                              </table>                             
+                  </td>
+                </tr> 
+                <tr>
+                    <td  colspan="3" class="texto">
+                       Aparelhos a serem negociados no momento do fechamento           
+                  </td>
+                </tr>  
+                 <tr>
+                    <td  colspan="3" >&nbsp;
+                                               
+                  </td>
+                </tr>  
+                                 <tr>
+                    <td  colspan="3" class=^texto^>
+                      <strong>Observações Importantes</strong><BR>
+Validade desta proposta: #input.numero[][2]; de   #input.string[Mes][10]; de #input.numero[][4]; <BR>
+  Nos valores de prestação de   serviço estão incluídos os impostos<BR>
+  O prazo de entrega dos aparelhos será de   até 20 dias úteis, a partir da data da entrega de toda documentação necessária e   de acordo com a disponibilidade de estoque.<BR>
+  Contrato sujeito a análise e   aprovação de crédito<BR>
+  Ofertas válidas mediante assinatura do Formulário de   Pedido PME com prazo de carência igual ao especificado nas condições comerciais,   sujeito a multa contratual.<BR>
+  <BR>
+
+Continuamos a sua total disposição para   quaisquer esclarecimentos.<BR>                      
+                  </td>
+                </tr>  
+                 <tr>
+                    <td  colspan="3" >&nbsp;
+                                               
+                  </td>
+                </tr>   
+                <tr>
+                    <td  colspan="3" >
+                       <table border="0" align="center" width="100%" cellpadding="0" cellspacing="0">  
+                                                                                                  <tr>
+                                                                                                    <Td  class="texto">Atenciosamente</Td>
+                                                                                                  </tr>
+                                                                                                  <tr>
+                                                                                                              <td>
+                                                                                                                                             <table align="left" width="45%" border="0" bordercolor="#999999" cellpadding="0" cellspacing="0">
+                                                                                                                                               <tr>
+                                                                                                                                                <td width="120"  align="left">#input.string[Teste vai merda][20];</td>
+                                        
+                                      </tr>
+                                      <tr>
+                                                                                                                                                             <td   align="left">#input.string[Função / Setor][30];</td>
+                                        
+                                      </tr>
+                                      <tr>
+                                                                                                                                                             <td   align="left"><STRONG>Cel</STRONG>.: +55 11 #input.string[][8];</td>
+                                        
+                                      </tr>
+                                      <tr>
+                                                                                                                                                             <td   align="left"><STRONG>E-mail: </STRONG>#input.string[][50];</td>
+                                        
+                                      </tr>
+                                                                                                                                             </table>                                             
+                                                                                                                             </td>
+                                                                                                              </tr>
+                        </table>                     
+                  </td>
+                </tr>   
+                       <tr>
+                 <td  colspan="3" class="cabecalho1">
+                        #empresa.razao_social;  - Agente Autorizado
+                                                                                              #empresa.endereco; , #empresa.numero; , #empresa.complemento;&nbsp;#empresa.bairro;&nbsp;#empresa.cidade;  #empresa.uf;&nbsp;Brasil&nbsp;Pabx: (#empresa.ddd; ) #empresa.tel;  Fax: (#empresa.ddd_fax; ) #empresa.fax;<br>
+                        Site:#empresa.razao_social;   
+                  </td>
+               </tr>    
+            </table>
+        </td>
+    </tr>
+</table>

@@ -1,0 +1,51 @@
+services:
+  edm-php:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: edm-php
+    platform: linux/amd64
+    working_dir: /var/www/html
+    ports:
+      - "8086:80"
+    volumes:
+      - ../app:/var/www/html
+    depends_on:
+      edm-mysql:
+        condition: service_healthy
+    networks:
+      - edm-net
+
+  edm-mysql:
+    image: mysql:5.7
+    container_name: edm-mysql
+    platform: linux/amd64
+    command:
+      - --sql-mode=
+      - --default-time-zone=America/Sao_Paulo
+    ports:
+      - "3311:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: "SENHA"
+      MYSQL_DATABASE: "wwgepr_edm"
+      MYSQL_USER: "wwgepr_edm"
+      MYSQL_PASSWORD: "gepros15082008"
+      TZ: "America/Sao_Paulo"
+    volumes:
+      - edm_mysql_data:/var/lib/mysql
+      - ./docker/mysql/conf.d:/etc/mysql/conf.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin --no-defaults ping -h 127.0.0.1 -uroot -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+    networks:
+      - edm-net
+
+networks:
+  edm-net:
+    driver: bridge
+
+volumes:
+  edm_mysql_data:

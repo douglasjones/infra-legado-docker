@@ -1,0 +1,47 @@
+services:
+  hemil-mysql:
+    image: mysql:5.7
+    container_name: hemil-mysql
+    platform: linux/amd64
+    command:
+      - --sql-mode=
+      - --default-time-zone=America/Sao_Paulo
+      - --character-set-server=latin1
+      - --collation-server=latin1_swedish_ci
+    ports:
+      - "8086:80"
+      - "3311:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: "SENHA"
+      MYSQL_DATABASE: "gepros1com_hemil"
+      MYSQL_USER: "gepros1com_hemil"
+      MYSQL_PASSWORD: "gepros15082008"
+      TZ: "America/Sao_Paulo"
+    volumes:
+      - hemil_mysql_data:/var/lib/mysql
+      - hemil_mysql_socket:/var/run/mysqld
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin --no-defaults ping -h 127.0.0.1 -uroot -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+
+  hemil-php:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: hemil-php
+    platform: linux/amd64
+    working_dir: /var/www/html
+    volumes:
+      - ../source/hemil:/var/www/html
+      - hemil_mysql_socket:/var/run/mysqld
+    depends_on:
+      hemil-mysql:
+        condition: service_healthy
+    network_mode: "service:hemil-mysql"
+
+volumes:
+  hemil_mysql_data:
+  hemil_mysql_socket:

@@ -1,0 +1,423 @@
+/*--Titulos Fontes--*/
+.titulo{
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	FONT-SIZE: 12px;
+	color : #ffffff;
+	font-weight : bold;
+	text-align : center ;
+}
+
+/*--Fonte  --*/
+.texto_label{
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	FONT-SIZE: 11px;
+	color : #666666;
+}
+.font_grid{
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	FONT-SIZE: 11px;
+	color : #666666;
+	border: 0px solid #ffffff;
+}
+
+.font_branca{
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	FONT-SIZE: 11px;
+	color : #ffffff;
+
+}
+
+.calendario{
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	FONT-SIZE: 10px;
+	color : #666666;
+	text-align : center ;
+}
+/*--Fonte Tabela body  --*/
+
+
+/*--Link --*/
+.link{
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	FONT-SIZE: 10px;
+	color : #0066ff;
+	border: 0px solid #ffffff;
+}
+.link_cinza{
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	FONT-SIZE: 10px;
+	color : #666666;
+}
+
+/*--Botão
+.botao{
+	font-family: verdana;
+	font-size: 10px;
+	color: #000033;
+	background: #ffffff;
+	border: 1px solid #000033;
+}
+*/
+Button {
+	BORDER-RIGHT: #000000 1px solid;
+	BORDER-TOP: #000000 1px solid;
+	FONT-SIZE: 10px;
+	BORDER-LEFT: #000000 1px solid;
+	BORDER-BOTTOM: #000000 1px solid;
+	FONT-FAMILY: verdana;
+	BACKGROUND-COLOR: #ffffff
+}
+
+
+
+
+
+/*--Input Text --*/
+input {
+	font-family: verdana;
+	font-size: 10px;
+	color: #000033;
+	background: #ffffff;
+	border: 1px solid #4B5D75;
+}
+/*--Input Select --*/
+select {
+	font-family: verdana;
+	font-size: 10px;
+	color: #000033;
+	background: #ffffff;
+	border: 1px solid #4B5D75;
+}
+/*--Input TextArea --*/
+textarea {
+	font-family: verdana;
+	font-size: 10px;
+	color: #4B5D75;
+	background: #ffffff;
+	border: 1px solid #4E697F;
+}
+
+/*--Tabela  --*/
+.borda_tabela {
+	background: #ffffff;
+	border: 1px solid #cccccc;
+}
+/*--Corpo da Tabela  --*/
+.corpo{
+	background-image: url("../imagens/menu_back.gif");
+}
+/*--Form --*/
+.form{
+
+	/*background-image: url("../imagens/menu_back.gif");*/
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	FONT-SIZE: 11px;
+	color: #333333;
+}
+.form1{
+	background: #d7d7d7;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	FONT-SIZE: 11px;
+	color: #333333;
+}
+
+/*--Topo Tabela  --*/
+.topo{
+	background-image: url(../../images/barra_topo.png);
+	/*background: #f5f5f5;*/
+}
+
+
+
+.thead{
+	background-image: url("../imagens/barra_topo.png");
+
+}
+
+.topo_grid{
+	background-image: url("../imagens/barra_topo.png");
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	FONT-SIZE: 12px;
+	color : #ffffff;
+	font-weight : bold;
+	text-align : center ;
+}
+.grid{
+	background-color: #CCCCF0;
+	width:100%;
+	height:30;
+	text-decoration:none;
+
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	FONT-SIZE: 10px;
+	color : #000000;
+	font-weight : bold;
+	text-align : center ;
+}
+.font_grid{
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	FONT-SIZE: 10px;
+	color : #000066;
+
+}
+
+/*--Bosda Tabela GRID  --*/
+.borda_tabela {
+	background: #ffffff;
+	border: 1px solid #0000;
+
+}
+
+.titulo_grid{
+	background: #6666FF;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-weight: bold ;
+	FONT-SIZE: 11px;
+	color: #ffffff;
+}
+
+.conteudo_grid{
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 10px;
+	color : #000000;
+	font-weight : bold;
+}
+
+ .total_grid{
+	sfont-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 14px ;
+	font-weight: bold;
+	color:#000000;
+	text-align:center;
+}
+
+/*--Linha Tabela  --*/
+.tr{
+	background: #e6e6e6;
+}
+div.iframe {
+	width:80%;
+	height:80px;
+	overflow:auto;
+	background:white;
+	border:inset 1px;
+}
+
+/*--Menu Lateral--*/
+div.m_horizontal_item {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	FONT-SIZE: 10px;
+	text-align: center;
+	color: #FFFFFF;
+	margin: 1px;
+	padding: 5px;
+    width:68px;
+	background-color: transparent;
+	background-image: url("../imagens/botao1.png");
+	background-repeat: no-repeat;
+	background-position: center  center;
+
+}
+div.m_horizontal_item_hover {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	FONT-SIZE: 10px;
+	text-align: center;
+	color: #FFFFFF;
+	margin: 1px;
+	padding: 5px;
+    width:68px;
+
+	background-color: transparent;
+	background-image: url("../imagens/botao2.png");
+	background-repeat: no-repeat;
+	background-position: center  center;
+}
+
+/*--Menu Principal Lateral*/
+.m_lateral_principal_item{
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	FONT-SIZE: 11px;
+	color : #000066;
+	margin: 2px;
+	padding: 2px;
+	background-color: transparent;
+	background-repeat: no-repeat;
+	background-position: center left;
+
+}
+.m_lateral_item_hover {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	FONT-SIZE: 10px;
+	color : #0000FF;
+	margin: 2px;
+	padding: 2px;
+	background-color: transparent;
+	background-image: url("../imagens/marcador_rotating_gelo.gif");
+	background-repeat: no-repeat;
+	background-position: center left;
+}
+/*--Sub Menu--*/
+div.m_lateral_item {
+	margin: 0px;
+	padding: 5px;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	FONT-SIZE: 10px;
+	background-color: transparent;
+	background-image: url("../images/marcador_stop_gelo.gif");
+	background-repeat: no-repeat;
+	background-position: center left;
+}
+div.m_lateral_spacer {
+    clear: both;
+	width: 100px;
+	height: 5px;
+	margin: 0;
+	padding: 0;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	FONT-SIZE: 10px;
+}
+div.m_lateral_item_hover {
+	margin: 0px;
+	padding: 5px;
+	color: #0000FF;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	FONT-SIZE: 10px;
+	background-color: transparent;
+	background-image: url("../images/marcador_rotating_gelo.gif");
+	background-repeat: no-repeat;
+	background-position: center left;
+}
+
+
+
+.parametros{
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	FONT-SIZE: 12px;
+	color :000000;
+	font-weight : bold;
+	text-align : left ;
+}
+.parametros1{
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	FONT-SIZE: 12px;
+	color :000000;
+	font-weight : bold;
+	text-align : center ;
+}
+.titulo_relatorio{
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	FONT-SIZE: 12px;
+	color :#000066;
+	font-weight : bold;
+	text-align : left ;
+	background: #dfdfdf;
+}
+
+/*
+*********************
+** CSS Relatórios ***
+** por: Rogério ******
+*********************
+*/
+
+/*BODY*/
+
+.Rcorpo{
+	background-image: url("../imagens/menu_back.gif");
+}
+
+/*inicio topo*/
+
+.Rtopo{
+	background-image: url("../imagens/barra_topo.png");
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	FONT-SIZE: 12px;
+	color : #ffffff;
+	font-weight : bold;
+	text-align : center ;
+}
+
+/*fim tipo*/
+
+/*inicio paramentros*/
+
+
+.Rparametros{
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	FONT-SIZE: 12px;
+	color :#000000;
+	font-weight : bold;
+	text-align : left ;
+	margin:30px;
+}
+
+.Rtexto_label{
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	FONT-SIZE: 11px;
+	color : #666666;
+}
+
+/*fim parametros*/
+
+/*inicio tabela principal*/
+
+.Rborda_tabela {
+	background: #ffffff;
+	border: 1px solid #cccccc;
+	margin-bottom:30px;
+}
+
+.Rtitulo_grid{
+	background: #799BDB;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-weight: bold ;
+	FONT-SIZE: 11px;
+	color: #ffffff;
+}
+
+.Rlink_cinza{
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	FONT-SIZE: 10px;
+	color : #666666;
+}
+
+.Rgrid{
+	background-color: #CCCCF0;
+	width:100%;
+	height:30;
+	text-decoration:none;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	FONT-SIZE: 10px;
+	color : #000000;
+	font-weight : bold;
+	text-align : center ;
+}
+
+.Rsub_total{
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	FONT-SIZE: 10px;
+	color : #000066;
+
+}
+
+.Rsub_total2{
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	FONT-SIZE: 10px;
+	font-weight:bold;
+	color : #000000;
+	background-color:#B3D9FF;
+}
+
+.Rtotal_grid{
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	FONT-SIZE: 12px;
+	font-weight : bold;
+}
+
+/*fim tabela principal*/
+
+/*
+*********
+* FIM ***
+*********
+*/

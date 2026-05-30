@@ -1,0 +1,66 @@
+body {
+	text-align:center;
+	font-family:verdana,arial,helvetica,sans-serif;
+	font-size:10pt;
+	margin:0px;
+	padding:0px;
+	text-align:justify;
+	width:auto;
+}
+
+p {
+	text-indent: 2cm;
+}
+
+#conteudo {
+	width:100%;
+}
+
+#aparelhos td{
+	padding:5px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	margin-top:2em;
+}
+
+table {
+	border:solid 1px black;
+	text-align:center;
+	font-size:10pt;
+}
+
+thead {
+	background:rgb(223,223,223);
+	font-weight:bold;
+}
+
+td {
+	border:solid 1px black;
+	padding:5px;
+}
+
+table.semborda {
+	border:0;
+	font-size:10pt;
+}
+
+table.semborda td{
+	border:0;
+	padding:0;
+}
+
+.numero {
+	text-align:right;
+	white-space:nowrap;
+}
+
+.total {
+	color:red;
+	font-weight:bold;
+	white-space:nowrap;
+}
+
+.assinatura {
+	font-weight:bold;
+}

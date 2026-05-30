@@ -1,0 +1,39 @@
+name: atc-ronda
+
+services:
+  atc-ronda-php:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: atc-ronda-php
+    platform: linux/amd64
+    working_dir: /var/www/html
+    environment:
+      DB_HOST: ${DB_HOST:-187.127.23.38}
+      DB_PORT: ${DB_PORT:-3309}
+      DB_USER: ${DB_USER:-gepros1com_atc}
+      DB_PASSWORD: ${DB_PASSWORD:-gepros15082008}
+      DB_NAME: ${DB_NAME:-gepros1com_atc}
+      TZ: America/Sao_Paulo
+    volumes:
+      - ../app:/var/www/html
+    networks:
+      - atc-ronda-net
+
+  atc-ronda-nginx:
+    image: nginx:1.24-alpine
+    container_name: atc-ronda-nginx
+    platform: linux/amd64
+    ports:
+      - "${APP_PORT:-8086}:80"
+    volumes:
+      - ../app:/var/www/html:ro
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - atc-ronda-php
+    networks:
+      - atc-ronda-net
+
+networks:
+  atc-ronda-net:
+    driver: bridge

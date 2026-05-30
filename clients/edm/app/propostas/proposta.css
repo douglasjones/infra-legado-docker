@@ -1,0 +1,37 @@
+.texto {BORDER-RIGHT: #000000 0px solid; 
+BORDER-TOP: #000000 0px solid;
+FONT-SIZE: 14px; 
+BORDER-LEFT: #000000 0px solid; 
+BORDER-BOTTOM: #000000 0px solid; 
+FONT-FAMILY: Times New Roman, Times, serif; 
+BACKGROUND-COLOR: #ffffff} 
+
+.textocorpo {
+BORDER-RIGHT: #000000 0px solid; 
+BORDER-TOP: #000000 0px solid;
+FONT-SIZE: 12px; 
+BORDER-LEFT: #000000 0px solid; 
+BORDER-BOTTOM: #000000 0px solid; 
+FONT-FAMILY: Times New Roman, Times, serif; 
+BACKGROUND-COLOR: #ffffff} 
+
+.texto1 {
+BORDER-RIGHT: #000000 0px solid; 
+BORDER-TOP: #000000 0px solid; 
+FONT-SIZE: 10px; 
+BORDER-LEFT: #000000 0px solid; 
+BORDER-BOTTOM: #000000 0px solid; 
+FONT-FAMILY: Times New Roman, Times, serif; 
+BACKGROUND-COLOR: #ffffff} 
+
+.textotitulo {
+FONT-SIZE: 12px; 
+FONT-FAMILY: Times New Roman, Times, serif; 
+BACKGROUND-COLOR: #f5f5f5} 
+
+.textotabela {
+FONT-SIZE: 12px; 
+FONT-FAMILY: Times New Roman, Times, serif; 
+BACKGROUND-COLOR: #ffffff} 
+
+

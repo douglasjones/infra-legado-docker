@@ -1,0 +1,17 @@
+//----------------------------------
+// Fábio Gonçalves
+// limone@catanduva.com.br
+// Bacharel em Matemática
+// Aplicada e Computacional
+// UNESP - São José do Rio Preto -SP
+//----------------------------------
+
+Esta versão recupera as informações HTML no Editor,
+
+Digite o texto, grave em arquivo texto ou banco de dados
+
+Depois utilize a função EmpTags() (javascript) para recuperar o
+
+HTML no Editor
+
+//-------------------------------------------

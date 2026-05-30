@@ -1,0 +1,65 @@
+services:
+  vs-solucoes-php:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: vs-solucoes-php
+    platform: linux/amd64
+    working_dir: /var/www/html
+    environment:
+      DB_HOST: vs-solucoes-mysql
+      DB_USER: gepros1com_vs_solucoes
+      DB_PASSWORD: gepros15082008
+      DB_NAME: gepros1com_vs_solucoes
+    volumes:
+      - ../app:/var/www/html
+    networks:
+      - vs-solucoes-net
+
+  vs-solucoes-nginx:
+    image: nginx:1.24-alpine
+    container_name: vs-solucoes-nginx
+    platform: linux/amd64
+    ports:
+      - "8087:80"
+    volumes:
+      - ../app:/var/www/html:ro
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - vs-solucoes-php
+    networks:
+      - vs-solucoes-net
+
+  vs-solucoes-mysql:
+    image: mysql:5.7
+    container_name: vs-solucoes-mysql
+    platform: linux/amd64
+    command:
+      - --sql-mode=
+      - --default-time-zone=America/Sao_Paulo
+    ports:
+      - "3313:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: "SENHA"
+      MYSQL_DATABASE: "gepros1com_vs_solucoes"
+      MYSQL_USER: "gepros1com_vs_solucoes"
+      MYSQL_PASSWORD: "gepros15082008"
+      TZ: "America/Sao_Paulo"
+    volumes:
+      - vs_solucoes_mysql_data:/var/lib/mysql
+      - ./docker/mysql/conf.d:/etc/mysql/conf.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin --no-defaults ping -h 127.0.0.1 -uroot -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+    networks:
+      - vs-solucoes-net
+
+networks:
+  vs-solucoes-net:
+    driver: bridge
+
+volumes:
+  vs_solucoes_mysql_data:

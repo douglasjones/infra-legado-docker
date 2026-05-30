@@ -1,0 +1,167 @@
+/* colors */ /* rojo # 251, 77, 76 */ /* azul 69, 173, 168 */ /* verde - 136, 196, 37 */
+
+
+
+header, nav ul li a, 
+#main.t-moda-p-news p.more, 
+#main.t-moda-p-post p.back,
+.t-moda-p-footer p.back,
+#main.t-moda-p-singlegallery p.back,
+ul.getcontact .email a, 
+ul.getcontact .callus a, 
+#main.t-moda-p-contact a.map:after, 
+#info, #close, 
+#btn-collections span,
+.t-moda-p-footer span { 
+	background-color: #035292; 
+}
+.home header p, 
+.paragraph a,
+#main h2, #main time, 
+#main.t-moda-p-contact p a  { 
+	color: #035292; 
+}
+#main h2 { 
+	border-bottom-color: #035292;
+}
+#main.t-moda-p-contact a img, #main.t-moda-p-news ul.news-list li { 
+	border-color: #035292;
+}
+nav ul li:nth-child(4n+4) a { 
+	border-right-color: #035292; 
+}
+.home header h1 { 
+	background-color: #035292; 
+}
+nav.t-moda-p-menu ul li a, #main.t-moda-p-collections ul.collections li a {
+	border-color: #fff;
+}
+.paragraph {
+	color: #4d4d4d;
+}
+
+nav ul li a, 
+#main.news p.more a, 
+#main.t-moda-p-news p.more a,
+#main.t-moda-p-post p.back a,
+.t-moda-p-footer p.back a,
+#main.t-moda-p-singlegallery p.back a { color: #ffffff; }
+.home header p { background-color: #ffffff; }
+
+#main ul.news-list h2,
+#main.t-moda-p-contact p.name,
+#main.t-moda-p-post .title3,
+#main.t-moda-p-post h2.title4 {color: #8a8a8a; }
+.logo, header .title a {
+	color: #ffffff;}
+.logo {
+	text-align : left ;
+	font-style : normal ;
+	text-decoration : none ;
+	font-size : 2.5em ;
+	font-family : 'LeagueGothicRegular' ;}
+.title, header .title a {
+	color: #035292;}    
+.title {
+	text-align : left ;
+	text-transform : uppercase ;
+	font-style : normal ;
+	font-weight : normal ;    
+	text-decoration : none ;
+	font-size : 2.5em ;
+	font-family : LeagueGothicRegular ;} 
+.title2, header .title a {
+	color: #035292;}      
+.title2 {
+	text-align : left ;
+	text-transform : uppercase ;
+	font-style : normal ;
+	font-weight : normal ;    
+	text-decoration : none ;
+	font-size : 1em ;
+	font-family : LeagueGothicRegular ;} 
+.title5, header .title a {
+	color: #035292;}      
+.title5 {
+	text-align : center ;
+	text-transform : uppercase ;
+	font-style : normal ;
+	font-weight : normal ;    
+	text-decoration : none ;
+	font-size : 1em ;
+	font-family : LeagueGothicRegular ;}     
+.title3 {
+	text-align : left ;
+	font-weight : normal ;
+	font-style : italic ;
+	text-transform : none ;
+	text-decoration : none ;
+	font-size : 1.5em ;
+	font-family : Times New Roman ;} 
+.title4 {
+	text-align : left ;
+	font-weight : normal ;
+	font-style : normal ;
+	text-transform : uppercase ;
+	text-decoration : none ;
+	font-size : 1.5em ;
+	font-family : LeagueGothicRegular ;} 
+.subtitle {
+	text-align : left ;
+	font-weight : normal ;
+	font-style : normal ;
+	text-transform : uppercase ;
+	text-decoration : none ;
+	font-size : 1.6em ;
+	font-family : LeagueGothicRegular ;} 
+.paragraph {
+	text-align : left ;
+	font-weight : normal ;
+	font-style : normal ;
+	text-transform : none ;
+	text-decoration : none ;
+	font-size : 1em ;
+	font-family : Times New Roman ;} 
+.link {
+	text-align : left ;
+	font-weight : normal ;
+	font-style : normal ;
+	text-transform : uppercase ;
+	text-decoration : none ;
+	font-size : 1.4em ;
+	font-family : LeagueGothicRegular ;} 
+.menu {
+	text-align : center ;
+	font-weight : normal ;
+	font-style : normal ;
+	text-transform : none ;
+	text-decoration : none ;
+	font-size : 60% ;
+	font-family : LeagueGothicRegular ;} 
+ .horarioagenda, header .title a {
+	color: #035292;}   
+.horarioagenda {
+	text-align : left ;
+	text-transform : none ;
+	font-style : normal ;
+	font-weight : normal ;    
+	text-decoration : none ;
+	font-size : 1.7em ;
+	font-family : LeagueGothicRegular ;} 
+ .textoagenda, header .title a {
+	color: #035292;}   
+.textoagenda {
+	text-align : left ;
+	text-transform : none ;
+	font-style : normal ;
+	font-weight : normal ;    
+	text-decoration : none ;
+	font-size : 1em ;
+	font-family : LeagueGothicRegular ;} 
+.lateral{
+        border-left:.5pt solid #035292; }  
+.top{
+        border-top:.5pt solid #035292;width:151pt;}      
+.final{
+        border-bottom:.5pt solid #035292;width:151pt;}           
+                          

@@ -1,0 +1,50 @@
+# Dependências PHP
+vendor/
+
+# Logs
+*.log
+logs/
+log/
+
+# Cache e temporários
+cache/
+tmp/
+temp/
+.cache/
+
+# Uploads e arquivos gerados em runtime
+uploads/
+storage/
+public/uploads/
+
+# Dumps de banco
+*.sql.gz
+*.dump
+*.sql
+
+# Arquivos de sistema
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*.orig
+
+# Ambiente
+.env.local
+.env.development
+.env.test
+
+# Node (se houver assets compilados)
+node_modules/
+dist/
+build/
+
+# PHP específico
+*.phar
+composer.lock   # manter se quiser build reproduzível, remover se vendor não vai para Git
+php_errors.log

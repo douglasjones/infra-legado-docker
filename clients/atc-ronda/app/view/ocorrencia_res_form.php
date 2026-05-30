@@ -1,0 +1,72 @@
+<?require_once "../inc/php/header.php";?>
+
+<script src="ocorrencia_res_form.js?<?php echo time(); ?>" type="text/javascript" charset="utf-8"></script>
+
+<div class="row">  
+    <div class="col-md-12">
+        <h4>Lead - Ocorrência(s)</h4>
+        <hr style='height:1px; border:none; color:#14074F; background-color:#14074F; margin-top: 0px; margin-bottom: 0px;'>
+    </div>        
+</div>
+<div class='row'>
+    <div class='col-md-12'>                        
+        <div id="ds_lead_titulo_ocorrencia"></div>
+        <br>
+    </div>
+</div>
+<div class='row'>
+    <div class='col-md-2'>                        
+        <div id="id_lead_ocorrencia"></div>    
+    </div>
+    <div class='col-md-3'>                        
+        <div id="dt_cadastro_lead_ocorrencia"></div>    
+    </div>  
+    <div class='col-md-3'>                        
+        <div id="dt_ult_atualizacao_lead_ocorrencia"></div>    
+    </div> 
+    <div class='col-md-4'>                        
+        <div id="ds_usuario_cadastro_ocorrencia"></div>    
+    </div> 
+</div>
+<div class='row'>
+    <div class="col-md-12">                    
+        <hr style='height:1px; border:none; color:#14074F; background-color:#14074F; margin-top: 0px; margin-bottom: 0px;'>
+    </div>        
+</div>    
+<p>
+<div class='row'>
+    <div class='col-md-12'>
+        <button type="button" id="cmdIncluirOcorrencia" class="btn btn-primary btn-sm" >Incluir Ocorrência</button>
+    </div>
+</div>
+<br>
+<div class="row">
+    <div class="col-md-12">
+        <table class="table table-striped table-bordered nowrap" style="width:100%" id="tblOcorrencia">
+            <thead>
+                <tr>
+                    <th>Cód</th>              
+                    <th>Dt Cad OC</th>
+                    <th>Tipo OC</th>
+                    <th>Tipo Ocorrência_pk</th>
+                    <th>Descr OC</th> 
+                    <th>Usuário Cad</th>
+                    <th>Dt Fech OC</th>                    
+                    <th>Agendado Para</th>
+                    <th>Dt Retorno</th>
+                    <th>Descr Retorno</th>
+                    <th>Dt Fech Retorno</th>                
+                    <th>Ação</th>                        
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<?
+require_once "ocorrencia_cad_form.php";
+require_once "../inc/php/footer.php";
+?>
+

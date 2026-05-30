@@ -1,0 +1,65 @@
+services:
+  gt-php:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: gt-php
+    platform: linux/amd64
+    working_dir: /var/www/html
+    environment:
+      DB_HOST: gt-mysql
+      DB_USER: gepros1com_gt
+      DB_PASSWORD: gepros15082008
+      DB_NAME: gepros1com_gt
+    volumes:
+      - ../app:/var/www/html
+    networks:
+      - gt-net
+
+  gt-nginx:
+    image: nginx:1.24-alpine
+    container_name: gt-nginx
+    platform: linux/amd64
+    ports:
+      - "8086:80"
+    volumes:
+      - ../app:/var/www/html:ro
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - gt-php
+    networks:
+      - gt-net
+
+  gt-mysql:
+    image: mysql:5.7
+    container_name: gt-mysql
+    platform: linux/amd64
+    command:
+      - --sql-mode=
+      - --default-time-zone=America/Sao_Paulo
+    ports:
+      - "3312:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: "SENHA"
+      MYSQL_DATABASE: "gepros1com_gt"
+      MYSQL_USER: "gepros1com_gt"
+      MYSQL_PASSWORD: "gepros15082008"
+      TZ: "America/Sao_Paulo"
+    volumes:
+      - gt_mysql_data:/var/lib/mysql
+      - ./docker/mysql/conf.d:/etc/mysql/conf.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin --no-defaults ping -h 127.0.0.1 -uroot -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+    networks:
+      - gt-net
+
+networks:
+  gt-net:
+    driver: bridge
+
+volumes:
+  gt_mysql_data:

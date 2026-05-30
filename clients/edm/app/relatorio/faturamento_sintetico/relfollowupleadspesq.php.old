@@ -1,0 +1,210 @@
+<?
+
+/*
+
+Pagina:relfollowuppesq.php
+
+modulo:Relatorios
+
+
+
+Dados de criação
+
+Criação:
+
+Empresa:
+
+Executor
+
+
+
+Histórico das Revisões:
+
+ Criação: 26/06/2008
+
+ Empresa:
+
+ Executor RINALDO PELIGRINELI
+
+
+
+Histórico de Auditorias:
+
+ Criação: 16/04/2008
+
+ Empresa:
+
+ Executor FELIPE SANTOS
+
+ */
+
+/*
+
+ Includes
+
+*/
+
+    include_once "../../libs/maininclude.php";
+
+	include_once "../../libs/cla.combo.php";
+$acao = $_REQUEST['acao'];
+if(!(($acao == 'cs' && permissao('relfollowupleadspesq.php', 'cs')) || ($acao == 'upd' && permissao('relfollowupleadspesq.php', 'al')))){
+		javascriptalert('Você não tem permissão para acessar esta página!!!');
+		exit;
+	}
+?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head>
+
+    <!--Include CSS-->
+
+<link rel="stylesheet" href="../../extras/public.css" type="text/css">
+
+<link rel="stylesheet" type="text/css" href="../../extras/datepicker.css"
+
+    <!--Cabeçalho-->
+
+    <title>Relatório de FollowUp de Leads</title>
+
+<?	include_once "../../libs/head.php";?>
+
+
+
+    <!--Comandos Javascript-->
+
+	<script type="text/javascript" language="javascript">
+
+	function enviar(){
+
+		var frm = document.forms[0]
+
+		if(!validateForm(frm)) return false
+
+		frm.submit()
+
+		self.close()
+
+		return true
+
+	}
+
+	</script>
+
+</head>
+
+    <!--HTML-->
+
+    <body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
+
+	<form name="dados" method="get" action="../relatorio.php" target="_blank">
+	<input type="hidden" name="dirrel" value="followup_leads">
+	<input type="hidden" name="pgrel" value="relfollowupleadsres.php">
+
+<table width="100%" align="center"  height="5"  class="topo"  cellpadding="0" cellspacing="0">
+
+	<tr>
+
+		 <td  class="titulo"> 
+
+Relatório de FollowUp de Leads		</td>
+
+	</tr>
+
+</table>		
+
+<table border="0" cellpadding="0" cellspacing="0" class="form">
+
+	<tr>
+
+		<td collspan="2">&nbsp;
+
+			
+
+		</td>
+
+	</tr>
+
+	<tr>
+
+		<td>
+
+			&nbsp;<label  for="datacadastro">Polo:</label>
+
+		</td>
+
+		<td>
+		<? combo::polo();?>
+		</td>
+
+	</tr>
+		<tr>
+			<td>&nbsp;<label for="codequipe">Equipe:</label></td>
+			<td>
+			<?	combo::equipe();?>
+			</td>
+
+		</tr>
+
+		<tr>
+
+			<td>&nbsp;<label for="codgerenteconta">Consultor:</label></td>
+
+			<td>
+		<? combo::consultor($GerenteContas,$NomeUsuario);?>
+			</td>
+
+		</tr>
+
+		<tr>
+
+			<td colspan="2">
+
+			<input name="tgt" id="tgt" type="checkbox" />Tgt &nbsp;
+
+			<input name="led0" id="led0" type="checkbox" />0% &nbsp;
+
+			<input name="led25" id="led25" type="checkbox" />25% &nbsp;
+
+			<input name="led50" id="led50" type="checkbox" />50% &nbsp;
+
+			<input name="for75env" id="for75env" type="checkbox" onclick="document.getElementById('for75nao').checked=false;" />75% (Enviado Claro) &nbsp;
+
+			<input name="for75nao" id="for75nao" type="checkbox" onclick="document.getElementById('for75env').checked=false;" />75% <?			if($_SESSION['bd'] != 'uniglobe' && $_SESSION['bd'] != 'sorocaba_voip'){ ?>(N&atilde;o Enviado Claro)<? }else{ ?> &nbsp; <? } ?>
+
+			</td>
+
+		</tr>
+
+	</tbody>
+
+	<tfoot>
+
+		<tr>
+
+			<th colspan="2">
+
+				<input type="button" value="Enviar" onclick="enviar()" />
+
+				&nbsp;
+
+				<input type="button" value="Fechar" onclick="window.close()" />
+
+			</th>
+
+		</tr>
+
+	</tfoot>
+
+</table>
+
+	</form>
+
+</body>
+
+</html>
+
+<? include_once "../../libs/desconectar.php"; ?>
+
