@@ -147,6 +147,16 @@ current_commit_msg() {
   git log -1 --pretty="%s"
 }
 
+pending_changes_for_scope() {
+  git status --porcelain -- \
+    "clients/$CLIENT/app" \
+    "scripts/publish.sh" \
+    "scripts/rollback.sh" \
+    "scripts/setup-git-vps.sh" \
+    "config/containers.map" \
+    "docs/deploy-process-v2.md"
+}
+
 container_name="$(resolve_container || true)"
 
 if [[ -z "$container_name" ]]; then
@@ -186,10 +196,10 @@ if $AUDIT_ONLY; then
   exit 0
 fi
 
-UNCOMMITTED=$(git status --porcelain | wc -l | tr -d ' ')
+UNCOMMITTED=$(pending_changes_for_scope | wc -l | tr -d ' ')
 if [[ "$UNCOMMITTED" -gt 0 ]]; then
-  echo -e "${RED}There are uncommitted files in the repository.${NC}"
-  git status --short
+  echo -e "${RED}There are uncommitted files in the publish scope for $CLIENT.${NC}"
+  pending_changes_for_scope
   exit 1
 fi
 
