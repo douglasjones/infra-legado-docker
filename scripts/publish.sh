@@ -128,7 +128,7 @@ local_md5() {
 
 remote_md5() {
   local file="$1"
-  ssh "$VPS_USER@$VPS_HOST" "if [ -f '$file' ]; then if command -v md5sum >/dev/null 2>&1; then md5sum '$file' | awk '{print \\\$1}'; else md5 -q '$file'; fi; fi"
+  ssh "$VPS_USER@$VPS_HOST" "if [ -f '$file' ]; then if command -v md5sum >/dev/null 2>&1; then md5sum '$file' | cut -d' ' -f1; else md5 -q '$file'; fi; fi"
 }
 
 last_release_tag() {
