@@ -843,3 +843,9 @@ Acesso:
 - Container: brasil-php
 - Manifest: /Volumes/MACWORK/gpros-workspace/03-clients/active/facilities/migracao/infra-legado-docker/clients/brasil-servis/docs/releases/release-2026-05-30-11-05-26.txt
 
+## [2026-05-31 10:36] Publish - america-servis
+- Commit: eb3c9bb - chore: release manifest brasil-servis 2026-05-30 11-05-26
+- Reason: Piloto Git Deploy America Servis
+- Container: america-php
+- Manifest: /Volumes/MACWORK/gpros-workspace/03-clients/active/facilities/migracao/infra-legado-docker/clients/america-servis/docs/releases/release-2026-05-31-10-36-21.txt
+
