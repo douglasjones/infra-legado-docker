@@ -1,9 +1,32 @@
 var tblResultado;
+
+function refreshChosen(selector) {
+    var $elements = $(selector);
+
+    $elements.each(function () {
+        var $element = $(this);
+
+        if (!$element.is('select')) {
+            return;
+        }
+
+        if ($element.data('chosen')) {
+            $element.trigger('chosen:updated');
+            return;
+        }
+
+        $element.chosen({
+            allow_single_deselect: true,
+            search_contains: true,
+            width: '100%'
+        });
+    });
+}
+
 function fcPesquisar() {
-    $(".chzn-select").chosen('destroy');
     tblResultado.clear().destroy();
     fcCarregarGrid();
-     $(".chzn-select").chosen({ allow_single_deselect: true });
+    refreshChosen("#leads_pk, #colaborador_pk");
 
 }
 function fcVoltar(){
@@ -370,6 +393,7 @@ function fcCarregarLeads() {
     
     carregarComboAjax($("#leads_pk"), arrCarregar, " ", "pk", "ds_lead");
     carregarComboAjax($("#leads_consulta_folha_pk"), arrCarregar, " ", "pk", "ds_lead");
+    refreshChosen("#leads_pk, #leads_consulta_folha_pk");
 
 }
 
@@ -383,6 +407,7 @@ function fcCarregarColaborador() {
     var arrCarregar = carregarController("colaborador", "listarColaboradorLead", objParametros);
     //NewWindow(v_last_url)
     carregarComboAjax($("#colaborador_pk"), arrCarregar, " ", "pk", "ds_colaborador");
+    refreshChosen("#colaborador_pk");
 
 }
 
@@ -472,6 +497,7 @@ function fcCarregarColaboradorFolhaPonto() {
     //NewWindow(v_last_url)
     carregarComboAjax($("#colaborador_consulta_folha_pk"), arrCarregar, " ", "pk", "ds_colaborador");
     carregarComboAjax($("#colaborador_pk_modal"), arrCarregar, " ", "pk", "ds_colaborador");
+    refreshChosen("#colaborador_consulta_folha_pk, #colaborador_pk_modal");
 
 }
 function parseDateBR(dateStr) {
@@ -2000,11 +2026,7 @@ $(document).ready(function () {
         return false;
     }
     $("#leads_pk").change(function () {
-        
-        $(".chzn-select").chosen('destroy');
         fcCarregarColaborador();
-        $(".chzn-select").chosen({ allow_single_deselect: true });
-
     });
     //faz a carga inicial do grid.
     fcCarregarGenero();
@@ -2054,17 +2076,12 @@ $(document).ready(function () {
     });
     fcPreencherPeriodoReloginho();
     $("#leads_consulta_folha_pk").change(function () {
-        
-        $(".chzn-select").chosen('destroy');
         //fcCarregarColaboradorFolhaPonto();
 
         //PEGA A AGENDA DO LEAD
 
        
-        
-        $(".chzn-select").chosen({ allow_single_deselect: true });
-
-       
+        refreshChosen("#leads_consulta_folha_pk, #colaborador_consulta_folha_pk, #colaborador_pk_modal");
     });
     $("#colaborador_consulta_folha_pk").change(function () {
 
@@ -2137,6 +2154,7 @@ $(document).ready(function () {
     $("#carregar").hide();
     $("#exibir").show();
 
-    $(".chzn-select").chosen({ allow_single_deselect: true });
+    refreshChosen("#leads_pk, #colaborador_pk");
+    refreshChosen("#leads_consulta_folha_pk, #colaborador_consulta_folha_pk, #colaborador_pk_modal");
 
 });

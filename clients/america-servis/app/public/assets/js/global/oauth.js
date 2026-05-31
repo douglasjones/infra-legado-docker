@@ -1,6 +1,8 @@
 $(document).ready(function () {
 
     var logo = "";
+    var defaultLogo = "/assets/img/logo/logo-white.png";
+    $("#ds_img_cliente").attr("src", defaultLogo);
     $.ajax({
   
         type: 'GET',
@@ -11,8 +13,12 @@ $(document).ready(function () {
             try {
                 var log = JSON.parse(response.responseText);
 
+                if (!log || log.status === false || !log.data || !log.data[0]) {
+                    return;
+                }
+
                 if(log.data[0] == '[]'){
-                    logo = '';
+                    logo = defaultLogo;
                 }
                 else{
                    if(log.data[0]['tipo_conta_pk'] == 1){
@@ -20,11 +26,11 @@ $(document).ready(function () {
                            logo = log.data[0]['ds_img_cliente'];
                        }
                        else{
-                            logo = '';
+                            logo = defaultLogo;
                        }
                    }
                    else{
-                       logo = '';
+                       logo = defaultLogo;
                    }
               
                     //$('.bg').css('background-image', 'url(' + logo + ')');
@@ -34,7 +40,7 @@ $(document).ready(function () {
 
                 }
             } catch (e) {
-                utilsJS.toastNotify(false, 'Ocorreu um erro para efetuar o Login !.<br />');
+                $("#ds_img_cliente").attr("src", defaultLogo);
             }
         }
     });

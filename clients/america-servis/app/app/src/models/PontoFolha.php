@@ -10,6 +10,8 @@ use Throwable;
 class PontoFolha {
 
     public $pdo;
+    private $margemInicioTurnoNoturnoSegundos = 14400;
+    private $margemFimTurnoNoturnoSegundos = 21600;
 
     public function __construct($pdo) {
         $this->pdo = $pdo;
@@ -3035,6 +3037,38 @@ class PontoFolha {
         
     } 
 
+    private function horarioCruzaMeiaNoite($hr_inicio_expediente, $hr_termino_expediente)
+    {
+        $hr_inicio_expediente = trim((string)$hr_inicio_expediente);
+        $hr_termino_expediente = trim((string)$hr_termino_expediente);
+
+        if ($hr_inicio_expediente === "" || $hr_termino_expediente === "") {
+            return false;
+        }
+
+        return strtotime($hr_inicio_expediente) > strtotime($hr_termino_expediente);
+    }
+
+    private function descreverTurnoEscala($turnoPk, $hr_inicio_expediente, $hr_termino_expediente)
+    {
+        if ($this->horarioCruzaMeiaNoite($hr_inicio_expediente, $hr_termino_expediente)) {
+            return 'Noite';
+        }
+
+        switch ((int)$turnoPk) {
+            case 1:
+                return 'Manhã';
+            case 2:
+                return 'Tarde';
+            case 3:
+                return 'Noite';
+            case 4:
+                return 'Dia Todo';
+            default:
+                return '';
+        }
+    }
+
   public function pegarHorarioDeEntradaPorDataDiaSemana($colaboradores_pk, $dt_escala, $agenda_colaborador_padrao_pk = "")
     {
         try{
@@ -3061,6 +3095,12 @@ class PontoFolha {
                     colaboradores_pk,
                     dt_inicio_agenda,
                     dt_fim_agenda,
+                    n_qtde_dias_semana,
+                    turnos_pk AS turno_base_pk,
+                    hr_inicio_expediente AS hr_inicio_expediente_base,
+                    hr_termino_expediente AS hr_termino_expediente_base,
+                    hr_saida_intervalo AS hr_saida_intervalo_base,
+                    hr_retorno_intervalo AS hr_retorno_intervalo_base,
                     hr_turno_{$diaCampo} AS hr_inicio_expediente,
                     hr_intervalo_{$diaCampo} AS hr_saida_intervalo,
                     hr_intervalo_saida_{$diaCampo} AS hr_retorno_intervalo,
@@ -3094,6 +3134,29 @@ class PontoFolha {
             $hr_saida_intervalo = $dadosEscala[0]['hr_saida_intervalo'];
             $hr_retorno_intervalo = $dadosEscala[0]['hr_retorno_intervalo'];
             $hr_termino_expediente = $dadosEscala[0]['hr_termino_expediente'];
+            $turnoPk = (int)$dadosEscala[0]['turno_pk'];
+
+            $nQtdeDiasSemana = trim((string)($dadosEscala[0]['n_qtde_dias_semana'] ?? ''));
+            $hr_inicio_expediente_base = $dadosEscala[0]['hr_inicio_expediente_base'];
+            $hr_saida_intervalo_base = $dadosEscala[0]['hr_saida_intervalo_base'];
+            $hr_retorno_intervalo_base = $dadosEscala[0]['hr_retorno_intervalo_base'];
+            $hr_termino_expediente_base = $dadosEscala[0]['hr_termino_expediente_base'];
+
+            $escalaDiaCruzaMeiaNoite = $this->horarioCruzaMeiaNoite($hr_inicio_expediente, $hr_termino_expediente);
+            $escalaBaseCruzaMeiaNoite = $this->horarioCruzaMeiaNoite($hr_inicio_expediente_base, $hr_termino_expediente_base);
+
+            $usarHorarioBase = $nQtdeDiasSemana === '12x36'
+                && $escalaBaseCruzaMeiaNoite
+                && !$escalaDiaCruzaMeiaNoite
+                && $hr_inicio_expediente_base !== ""
+                && $hr_termino_expediente_base !== "";
+
+            if ($usarHorarioBase) {
+                $hr_inicio_expediente = $hr_inicio_expediente_base;
+                $hr_saida_intervalo = $hr_saida_intervalo_base;
+                $hr_retorno_intervalo = $hr_retorno_intervalo_base;
+                $hr_termino_expediente = $hr_termino_expediente_base;
+            }
 
             // Retorna os dados já com os horários do dia específico
             return [
@@ -3101,7 +3164,8 @@ class PontoFolha {
                 'dados' => [
                     'pk' => $dadosEscala[0]['pk'],
                     'colaboradores_pk' => $dadosEscala[0]['colaboradores_pk'],
-                    'turno_pk' => $dadosEscala[0]['turno_pk'],
+                    'turno_pk' => $turnoPk,
+                    'ds_turno' => $this->descreverTurnoEscala($turnoPk, $hr_inicio_expediente, $hr_termino_expediente),
                     'ic_dia_ativo' => $dadosEscala[0]['ic_dia_ativo'],
                     'ic_folga' => $dadosEscala[0]['ic_folga'],
                     'hr_inicio_expediente' => $hr_inicio_expediente,
@@ -3174,6 +3238,11 @@ class PontoFolha {
             
 
 
+            $turnoDiaPk = isset($escala['dados']['turno_pk']) ? (int)$escala['dados']['turno_pk'] : (int)$turnos_pk;
+            $dsTurnoDia = isset($escala['dados']['ds_turno']) && $escala['dados']['ds_turno'] !== ""
+                ? $escala['dados']['ds_turno']
+                : $this->descreverTurnoEscala($turnoDiaPk, $hr_inicio_expediente, $hr_termino_expediente);
+
             $queryTempoExpediente  = $this->retornarDifHora($hr_inicio_expediente,$hr_termino_expediente);
      
             $expediente = $queryTempoExpediente[0]['dif']; 
@@ -3231,7 +3300,6 @@ class PontoFolha {
             $diaAtual = date('Y-m-d');
             $arrNoturno = $this->verificarPontoEscalaNoturna($dt_escala, $colaboradores_pk, $agenda_colaborador_padrao_pk);
             $arrNormal  = $this->verificarPontoEscalaNormal($dt_escala, $colaboradores_pk, $agenda_colaborador_padrao_pk);
-            $turnoDiaPk = isset($escala['dados']['turno_pk']) ? (int)$escala['dados']['turno_pk'] : (int)$turnos_pk;
             $isTurnoNoturno = $turnoDiaPk === 3 || (
                 $hr_inicio_expediente != "" &&
                 $hr_termino_expediente != "" &&
@@ -3567,8 +3635,8 @@ class PontoFolha {
                 "dia_da_semana" => $dia_da_semana,
                 "hr_inicio_expediente" => $hr_inicio_expediente,
                 "hr_termino_expediente" => $hr_termino_expediente,
-                "ds_turno" => $ds_turno,
-                "turnos_pk" => $turnos_pk,
+                "ds_turno" => $dsTurnoDia,
+                "turnos_pk" => $turnoDiaPk,
                 "ponto_folha_pk" => $ponto_folha_pk,
                 "ic_status_ponto_folha_pk" => $ic_status_ponto_folha_pk,
                 "arrVerificado" => $arrVerificado,
@@ -3603,9 +3671,17 @@ class PontoFolha {
             ? date('Y-m-d', strtotime($dt_escala . ' +1 day'))
             : $dt_escala;
 
+        $dt_inicio_operacional = $dt_escala . ' ' . $hr_inicio_expediente;
+        $dt_fim_operacional_com_hora = $dt_fim_operacional . ' ' . $hr_termino_expediente;
+
+        if ($cruzaMeiaNoite) {
+            $dt_inicio_operacional = date('Y-m-d H:i:s', strtotime($dt_inicio_operacional) - $this->margemInicioTurnoNoturnoSegundos);
+            $dt_fim_operacional_com_hora = date('Y-m-d H:i:s', strtotime($dt_fim_operacional_com_hora) + $this->margemFimTurnoNoturnoSegundos);
+        }
+
         return [
-            'inicio' => $dt_escala . ' ' . $hr_inicio_expediente,
-            'fim' => $dt_fim_operacional . ' ' . $hr_termino_expediente,
+            'inicio' => $dt_inicio_operacional,
+            'fim' => $dt_fim_operacional_com_hora,
             'cruza_meia_noite' => $cruzaMeiaNoite,
         ];
     }

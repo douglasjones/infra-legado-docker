@@ -40,7 +40,7 @@
 }
 
 .website-logo .logo {
-    background-image: url(/assets/img/logo/combo.png)
+    background-image: url('/assets/img/logo/logo-white.png')
 }
 
 .website-logo .logo img {
@@ -71,7 +71,7 @@
 }
 
 .img-holder .bg {
-    background-image: url('/assets/img/bg/auth.png');
+    background-image: none;
 }
 
 .form-holder {

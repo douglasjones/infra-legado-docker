@@ -14,6 +14,8 @@ class Ponto {
     public $pdo;
     private $maxPointImageWidth = 1280;
     private $pointImageJpegQuality = 75;
+    private $margemInicioTurnoNoturnoSegundos = 14400;
+    private $margemFimTurnoNoturnoSegundos = 21600;
 
     public function __construct($pdo) {
         $this->pdo = $pdo;
@@ -201,9 +203,17 @@ class Ponto {
             ? date('Y-m-d', strtotime($dt_escala . ' +1 day'))
             : $dt_escala;
 
+        $dt_inicio_operacional = $dt_escala . ' ' . $hr_inicio_expediente;
+        $dt_fim_operacional_com_hora = $dt_fim_operacional . ' ' . $hr_termino_expediente;
+
+        if ($cruzaMeiaNoite) {
+            $dt_inicio_operacional = date('Y-m-d H:i:s', strtotime($dt_inicio_operacional) - $this->margemInicioTurnoNoturnoSegundos);
+            $dt_fim_operacional_com_hora = date('Y-m-d H:i:s', strtotime($dt_fim_operacional_com_hora) + $this->margemFimTurnoNoturnoSegundos);
+        }
+
         return [
-            'inicio' => $dt_escala . ' ' . $hr_inicio_expediente,
-            'fim' => $dt_fim_operacional . ' ' . $hr_termino_expediente,
+            'inicio' => $dt_inicio_operacional,
+            'fim' => $dt_fim_operacional_com_hora,
         ];
     }
 
