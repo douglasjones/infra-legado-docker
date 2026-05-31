@@ -12,6 +12,10 @@ set -euo pipefail
 #   ./scripts/publish.sh brasil-servis --restart
 #   ./scripts/publish.sh brasil-servis --file app/app/src/controllers/Foo.php
 #   ./scripts/publish.sh brasil-servis --audit
+#
+# Important:
+#   This is an incremental publish for clients that already exist on the VPS.
+#   It syncs only clients/<cliente>/app/ and does not create infra/database/docs/logs.
 
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 CLIENTS_DIR="$ROOT_DIR/clients"
@@ -27,6 +31,7 @@ CLIENT=""
 DRY_RUN=false
 DO_RESTART=false
 AUDIT_ONLY=false
+ALLOW_DELETE=false
 SINGLE_FILE=""
 MOTIVO=""
 
@@ -41,13 +46,19 @@ TMP_FILES=()
 usage() {
   cat <<'EOF'
 Usage:
-  ./scripts/publish.sh <cliente> [--dry-run] [--restart] [--file caminho] [--motivo "texto"] [--audit]
+  ./scripts/publish.sh <cliente> [--dry-run] [--restart] [--allow-delete] [--file caminho] [--motivo "texto"] [--audit]
 
 Examples:
   ./scripts/publish.sh brasil-servis
   ./scripts/publish.sh brasil-servis --dry-run
   ./scripts/publish.sh brasil-servis --audit
   ./scripts/publish.sh brasil-servis --file app/app/src/models/Colaborador.php
+
+Notes:
+  - default publish scope is clients/<cliente>/app/
+  - publish incremental nao cria cliente do zero
+  - para bootstrap inicial, use ./scripts/bootstrap-client.sh <cliente>
+  - remote deletes are blocked by default; use --allow-delete to remove files on VPS
 EOF
 }
 
@@ -59,6 +70,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     --restart)
       DO_RESTART=true
+      shift
+      ;;
+    --allow-delete)
+      ALLOW_DELETE=true
       shift
       ;;
     --audit)
@@ -171,11 +186,14 @@ read_lines_into_array() {
 pending_changes_for_scope() {
   git status --porcelain -- \
     "clients/$CLIENT/app" \
+    "scripts/bootstrap-client.sh" \
     "scripts/publish.sh" \
     "scripts/rollback.sh" \
     "scripts/setup-git-vps.sh" \
     "config/containers.map" \
-    "docs/deploy-process-v2.md"
+    "docs/deploy-process-v2.md" \
+    "modelo-git/.gitignore-php-legado" \
+    "modelo-git/DEPLOY.md"
 }
 
 write_array_to_file() {
@@ -223,6 +241,35 @@ generate_remote_validation_report() {
 run_remote_delete_batch() {
   local delete_file="$1"
   ssh "$VPS_USER@$VPS_HOST" "BASE_PATH='$VPS_BASE/$CLIENT'; while IFS= read -r rel; do [ -n \"\$rel\" ] || continue; rm -f \"\$BASE_PATH/\$rel\"; done" < "$delete_file"
+}
+
+validate_remote_incremental_target() {
+  ssh "$VPS_USER@$VPS_HOST" "
+    BASE_PATH='$VPS_BASE/$CLIENT'
+    missing=0
+    for path in \"\$BASE_PATH/app\" \"\$BASE_PATH/infra\" \"\$BASE_PATH/infra/docker-compose.yml\"; do
+      if [ ! -e \"\$path\" ]; then
+        echo \"MISSING:\$path\"
+        missing=1
+      fi
+    done
+    exit \$missing
+  "
+}
+
+validate_remote_client_identity() {
+  local expected_container="$1"
+  ssh "$VPS_USER@$VPS_HOST" "
+    BASE_PATH='$VPS_BASE/$CLIENT'
+    COMPOSE_FILE=\"\$BASE_PATH/infra/docker-compose.yml\"
+    test -f \"\$COMPOSE_FILE\" || exit 1
+    basename \"\$BASE_PATH\" | grep -Fx '$CLIENT' >/dev/null || exit 1
+    if [ '$expected_container' = 'UNMAPPED' ]; then
+      grep -F '$CLIENT' \"\$COMPOSE_FILE\" >/dev/null
+    else
+      grep -F \"container_name: $expected_container\" \"\$COMPOSE_FILE\" >/dev/null || grep -F '$CLIENT' \"\$COMPOSE_FILE\" >/dev/null
+    fi
+  "
 }
 
 trap cleanup EXIT
@@ -311,6 +358,17 @@ if [[ ${#FILES_TO_SYNC[@]} -eq 0 && ${#FILES_TO_DELETE[@]} -eq 0 ]]; then
   exit 0
 fi
 
+if [[ ${#FILES_TO_DELETE[@]} -gt 0 && "$ALLOW_DELETE" == false ]]; then
+  echo -e "${RED}Remote deletes are blocked by default.${NC}"
+  echo "Files marked for deletion:"
+  for rel in "${FILES_TO_DELETE[@]}"; do
+    [[ -n "$rel" ]] && echo "  - $rel"
+  done
+  echo
+  echo "Re-run with --allow-delete if these removals are intentional."
+  exit 1
+fi
+
 if [[ -z "$MOTIVO" ]]; then
   MOTIVO="$(current_commit_msg)"
 fi
@@ -321,6 +379,7 @@ echo -e "${BLUE}=================================================${NC}"
 echo "Branch:   $(git rev-parse --abbrev-ref HEAD)"
 echo "Commit:   $(current_commit_short) - $(current_commit_msg)"
 echo "Container:$container_name"
+echo "Scope:    clients/$CLIENT/app/ only"
 echo "Reason:   $MOTIVO"
 echo
 
@@ -343,6 +402,31 @@ awk 'NF { printf "DELETE|%s\n", $0 }' "$DELETE_LIST_FILE" >> "$VALIDATION_INPUT_
 RSYNC_ARGS=(-az --checksum --files-from="$SYNC_LIST_FILE")
 if $DRY_RUN; then
   RSYNC_ARGS+=(-n)
+fi
+
+if [[ "$VPS_HOST" != "SEU_IP_VPS" ]]; then
+  REMOTE_TARGET_STATUS="$(make_temp_file)"
+  if ! validate_remote_incremental_target > "$REMOTE_TARGET_STATUS"; then
+    echo -e "${RED}publish incremental nao cria cliente do zero.${NC}"
+    echo "Remote target is incomplete for $CLIENT."
+    cat "$REMOTE_TARGET_STATUS"
+    echo
+    echo "Expected remote structure:"
+    echo "  - $VPS_BASE/$CLIENT/app"
+    echo "  - $VPS_BASE/$CLIENT/infra"
+    echo "  - $VPS_BASE/$CLIENT/infra/docker-compose.yml"
+    echo
+    echo "Use ./scripts/bootstrap-client.sh $CLIENT before publish incremental."
+    exit 1
+  fi
+
+  if ! validate_remote_client_identity "$container_name"; then
+    echo -e "${RED}Remote target validation failed for $CLIENT.${NC}"
+    echo "The remote docker-compose.yml does not appear to belong to the requested client."
+    echo "Expected client slug: $CLIENT"
+    echo "Expected mapped container: $container_name"
+    exit 1
+  fi
 fi
 
 rsync "${RSYNC_ARGS[@]}" "$CLIENT_DIR/" "$VPS_USER@$VPS_HOST:$VPS_BASE/$CLIENT/"

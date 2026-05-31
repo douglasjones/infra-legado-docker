@@ -12,7 +12,7 @@ Publicação parcial sem rastreabilidade:
 
 ---
 
-## Fluxo Correto (após setup)
+## Fluxo Correto
 
 ```
 Codex trabalha no Mac (branch fix/nome-da-correcao)
@@ -34,7 +34,7 @@ historico.md atualizado
 
 ## Setup Inicial (fazer uma vez)
 
-### Passo 1 — Inicializar Git na VPS (fonte de verdade)
+### Passo 1 — Inicializar Git na VPS (somente baseline operacional)
 
 ```bash
 # Conectar na VPS
@@ -47,18 +47,12 @@ bash /opt/gpros/infra-legado-docker/scripts/setup-git-vps.sh
 bash /opt/gpros/infra-legado-docker/scripts/setup-git-vps.sh brasil-servis
 ```
 
-### Passo 2 — Clonar cada cliente no Mac
+### Passo 2 — Manter o Git local/Mac como fonte de verdade
 
 ```bash
-# Para cada cliente, copiar o diretório da VPS para o Mac
-# Opção A: rsync inicial (recomendado — traz tudo incluindo .git)
-rsync -avz root@VPS_IP:/opt/gpros/infra-legado-docker/clients/brasil-servis/ \
-  /seu/caminho/local/infra-legado-docker/clients/brasil-servis/
-
-# Opção B: se já tem o diretório local mas sem Git
-# Copiar apenas o .git da VPS
-rsync -avz root@VPS_IP:/opt/gpros/infra-legado-docker/clients/brasil-servis/.git/ \
-  /seu/caminho/local/infra-legado-docker/clients/brasil-servis/.git/
+# O repositório local no Mac é a referência para deploy.
+# A VPS é somente ambiente de execução.
+# Não usar a VPS como origem principal de código.
 ```
 
 ### Passo 3 — Configurar VPS_HOST no publish.sh
@@ -79,6 +73,30 @@ chmod +x scripts/publish.sh
 
 ## Uso Diário
 
+### Regra de segurança antes de qualquer baseline na VPS
+
+```text
+Nunca rodar git add -A em cliente legado sem validar arquivos grandes.
+Nunca versionar dumps, backups, tar.gz, source original ou database.
+```
+
+### Bootstrap inicial de cliente na VPS
+
+```bash
+./scripts/bootstrap-client.sh america-servis
+```
+
+Esse fluxo cria a estrutura inicial do cliente na VPS com:
+
+- `app/`
+- `infra/`
+- `database/` somente estrutura
+- `docs/`
+- `logs/`
+- `source/`
+
+Depois do bootstrap, use `publish.sh` apenas para atualização incremental de `app/`.
+
 ### Publicar um cliente (fluxo completo)
 
 ```bash
@@ -92,6 +110,12 @@ git merge fix/escala-colaborador
 # Publicar
 ./scripts/publish.sh brasil-servis
 ```
+
+Observação:
+
+- `publish.sh` publica somente `clients/<cliente>/app/`
+- `publish.sh` não cria cliente do zero
+- se `app/`, `infra/` ou `infra/docker-compose.yml` não existirem na VPS, o script deve abortar
 
 ### Simular publicação sem enviar nada
 
@@ -182,6 +206,13 @@ git commit -m "hotfix: revert para release 2026-05-29"
 | `chore:` | Ajuste de config, infraestrutura |
 
 ---
+
+## Fonte de Verdade
+
+```text
+Git local/Mac = fonte de verdade
+VPS = ambiente de execução
+```
 
 ## Regra de Ouro
 

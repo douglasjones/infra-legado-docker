@@ -14,6 +14,7 @@ INFRA_ROOT="/opt/gpros/infra-legado-docker"
 CLIENTS_DIR="$INFRA_ROOT/clients"
 LOG_FILE="$INFRA_ROOT/historico.md"
 TEMPLATE_GITIGNORE="$INFRA_ROOT/modelo-git/.gitignore-php-legado"
+MAX_ALLOWED_BYTES=$((100 * 1024 * 1024))
 
 TARGET_CLIENT=""
 DRY_RUN=false
@@ -34,7 +35,89 @@ Examples:
   bash scripts/setup-git-vps.sh
   bash scripts/setup-git-vps.sh brasil-servis
   bash scripts/setup-git-vps.sh --dry-run
+
+Safety:
+  - applies .gitignore before staging
+  - never stages database/source/backups/dumps/packages
+  - stops when non-ignored files above 100 MB are found
 EOF
+}
+
+format_bytes() {
+  local bytes="$1"
+  awk -v bytes="$bytes" '
+    function human(x) {
+      split("B KB MB GB TB", unit, " ");
+      i = 1;
+      while (x >= 1024 && i < 5) {
+        x /= 1024;
+        i++;
+      }
+      return sprintf("%.2f %s", x, unit[i]);
+    }
+    BEGIN { print human(bytes) }
+  '
+}
+
+is_prohibited_path() {
+  local rel="$1"
+  case "$rel" in
+    database/*|source/*|logs/*|tmp/*|temp/*|cache/*|uploads/*|storage/*|node_modules/*|vendor/*|public/uploads/*)
+      return 0
+      ;;
+    backup/*|backups/*|*/backup/*|*/backups/*)
+      return 0
+      ;;
+    app_backup*|*/app_backup*|*_backup*|*/*_backup*)
+      return 0
+      ;;
+    *.sql|*.sql.gz|*.dump|*.tar|*.tar.gz|*.tgz|*.zip)
+      return 0
+      ;;
+  esac
+  return 1
+}
+
+find_tracked_prohibited_files() {
+  local output_file="$1"
+  : > "$output_file"
+
+  while IFS= read -r rel; do
+    [[ -z "$rel" ]] && continue
+    if is_prohibited_path "$rel"; then
+      printf '%s\n' "$rel" >> "$output_file"
+    fi
+  done < <(git ls-files)
+}
+
+collect_stageable_files() {
+  local output_file="$1"
+  local large_file_report="$2"
+  local rel=""
+  local size_bytes=""
+
+  : > "$output_file"
+  : > "$large_file_report"
+
+  while IFS= read -r -d '' rel; do
+    rel="${rel#./}"
+    [[ -z "$rel" ]] && continue
+
+    if is_prohibited_path "$rel"; then
+      continue
+    fi
+
+    if git check-ignore -q "$rel"; then
+      continue
+    fi
+
+    size_bytes="$(wc -c < "$rel" | tr -d ' ')"
+    if [[ -n "$size_bytes" ]] && (( size_bytes > MAX_ALLOWED_BYTES )); then
+      printf '%s|%s\n' "$size_bytes" "$rel" >> "$large_file_report"
+    fi
+
+    printf '%s\n' "$rel" >> "$output_file"
+  done < <(find . -path './.git' -prune -o -type f -print0)
 }
 
 ensure_gitignore_block() {
@@ -55,6 +138,17 @@ ensure_gitignore_block() {
 database/
 source/
 logs/
+backup/
+backups/
+app_backup*/
+*_backup*/
+*.tar
+*.tar.gz
+*.tgz
+*.zip
+*.sql
+*.sql.gz
+*.dump
 node_modules/
 .next/
 
@@ -161,15 +255,52 @@ for CLIENT in "${CLIENTS[@]}"; do
 
   ensure_gitignore_block ".gitignore"
 
-  git add -A
+  STAGEABLE_FILE_LIST="$(mktemp)"
+  LARGE_FILE_REPORT="$(mktemp)"
+  TRACKED_PROHIBITED_REPORT="$(mktemp)"
+
+  find_tracked_prohibited_files "$TRACKED_PROHIBITED_REPORT"
+  if [[ -s "$TRACKED_PROHIBITED_REPORT" ]]; then
+    echo -e "  ${RED}Tracked files matching prohibited backup/dump patterns were found.${NC}"
+    sed 's/^/    - /' "$TRACKED_PROHIBITED_REPORT"
+    echo "  Cleanup these tracked files manually before running setup-git-vps.sh again."
+    FAILED+=("$CLIENT")
+    rm -f "$STAGEABLE_FILE_LIST" "$LARGE_FILE_REPORT" "$TRACKED_PROHIBITED_REPORT"
+    continue
+  fi
+
+  collect_stageable_files "$STAGEABLE_FILE_LIST" "$LARGE_FILE_REPORT"
+
+  if [[ -s "$LARGE_FILE_REPORT" ]]; then
+    echo -e "  ${RED}Large non-ignored files above 100 MB detected.${NC}"
+    while IFS='|' read -r size_bytes rel; do
+      printf '    - %s (%s)\n' "$rel" "$(format_bytes "$size_bytes")"
+    done < "$LARGE_FILE_REPORT"
+
+    read -r -p "  Type CONTINUE to stage these files anyway: " CONFIRM_LARGE_FILES
+    if [[ "$CONFIRM_LARGE_FILES" != "CONTINUE" ]]; then
+      echo "  Aborted for safety."
+      FAILED+=("$CLIENT")
+      rm -f "$STAGEABLE_FILE_LIST" "$LARGE_FILE_REPORT" "$TRACKED_PROHIBITED_REPORT"
+      continue
+    fi
+  fi
+
+  git add -u -- .
+  while IFS= read -r rel; do
+    [[ -n "$rel" ]] && git add -- "$rel"
+  done < "$STAGEABLE_FILE_LIST"
+
   if git diff --cached --quiet; then
     echo -e "  ${GREEN}No pending changes${NC}"
     SKIPPED+=("$CLIENT")
+    rm -f "$STAGEABLE_FILE_LIST" "$LARGE_FILE_REPORT" "$TRACKED_PROHIBITED_REPORT"
     continue
   fi
 
   FILE_COUNT=$(git diff --cached --name-only | wc -l | tr -d ' ')
   git commit -m "chore: baseline VPS state $CLIENT $(date '+%Y-%m-%d')"
+  rm -f "$STAGEABLE_FILE_LIST" "$LARGE_FILE_REPORT" "$TRACKED_PROHIBITED_REPORT"
 
   {
     echo "## [$(date '+%Y-%m-%d %H:%M')] Setup Git VPS - $CLIENT"

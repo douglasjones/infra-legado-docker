@@ -17,10 +17,25 @@ uploads/
 storage/
 public/uploads/
 
-# Dumps de banco
+# Dumps, backups e pacotes pesados
+*.sql
 *.sql.gz
 *.dump
-*.sql
+*.tar
+*.tar.gz
+*.tgz
+*.zip
+backup/
+backups/
+app_backup*/
+*_backup*/
+database/
+source/
+
+# Node (se houver assets compilados)
+node_modules/
+dist/
+build/
 
 # Arquivos de sistema
 .DS_Store
@@ -38,11 +53,6 @@ desktop.ini
 .env.local
 .env.development
 .env.test
-
-# Node (se houver assets compilados)
-node_modules/
-dist/
-build/
 
 # PHP específico
 *.phar

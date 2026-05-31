@@ -4,6 +4,11 @@
 
 This document describes the v2 deployment scripts created for `infra-legado-docker` after the Git baseline was established at the repository root.
 
+Source of truth:
+
+- local Git on the Mac/workstation is the source of truth
+- the VPS is the execution environment
+
 Files delivered:
 
 ```text
@@ -105,6 +110,7 @@ Purpose:
 - reuse the PHP legacy `.gitignore` template
 - append managed exclusions for heavy/non-versioned client directories
 - create a baseline commit or sync commit if changes exist
+- stop and require explicit confirmation if non-ignored files above 100 MB are found
 
 Supports:
 
@@ -112,6 +118,28 @@ Supports:
 bash scripts/setup-git-vps.sh
 bash scripts/setup-git-vps.sh brasil-servis
 bash scripts/setup-git-vps.sh --dry-run
+```
+
+Safety rules:
+
+- never run blind `git add -A` in a legacy client
+- never version dumps, backups, `.tar.gz`, original `source/` or `database/`
+- validate large files before accepting a baseline commit
+
+## bootstrap-client.sh
+
+Purpose:
+
+- create the initial remote client structure on the VPS
+- sync `app/` and `infra/` from the local Git source
+- create empty `database/`, `docs/`, `logs/` and `source/` directories
+- avoid copying dumps during the initial bootstrap
+
+Usage:
+
+```bash
+./scripts/bootstrap-client.sh america-servis
+./scripts/bootstrap-client.sh america-servis --dry-run
 ```
 
 ## publish.sh
@@ -122,6 +150,7 @@ Purpose:
 - validate each published file by MD5
 - create release manifest only after successful validation
 - create client-specific release tag
+- abort if the remote client structure is incomplete
 
 Supported flags:
 
@@ -136,6 +165,7 @@ Supported flags:
 Notes:
 
 - default publish scope is the client `app/` directory
+- publish incremental does not create `infra/`, `database/`, `docs/`, `logs/` or `source/`
 - `--file` path is relative to the client root
 - script blocks if the repository has uncommitted changes
 
