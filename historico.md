@@ -849,3 +849,9 @@ Acesso:
 - Container: america-php
 - Manifest: /Volumes/MACWORK/gpros-workspace/03-clients/active/facilities/migracao/infra-legado-docker/clients/america-servis/docs/releases/release-2026-05-31-10-36-21.txt
 
+## [2026-05-31 16:16] Publish - america-servis
+- Commit: 6065cdb - fix: ajusta login e reloginho do america-servis
+- Reason: fix: ajusta login e reloginho do america-servis
+- Container: america-php
+- Manifest: /Volumes/MACWORK/gpros-workspace/03-clients/active/facilities/migracao/infra-legado-docker/clients/america-servis/docs/releases/release-2026-05-31-16-16-33.txt
+

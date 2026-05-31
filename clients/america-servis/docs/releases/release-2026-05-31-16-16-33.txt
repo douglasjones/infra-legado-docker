@@ -1,0 +1,51 @@
+=====================================
+RELEASE MANIFEST - america-servis
+=====================================
+Date:     2026-05-31 16:16:33
+Branch:   main
+Commit:   6065cdb
+Message:  fix: ajusta login e reloginho do america-servis
+Reason:   fix: ajusta login e reloginho do america-servis
+Operator: douglasjoneslopes
+VPS:      187.127.23.38
+Container: america-php
+
+FILES PUBLISHED:
+  - app/app/src/models/Ponto.php
+  - app/app/src/models/PontoFolha.php
+  - app/app/templates/login/login.twig
+  - app/app/templates/theme/base.login.twig
+  - app/public/assets/js/global/oauth.js
+  - app/public/assets/js/local/colaborador_res_form.js
+  - app/public/assets/plugins/iofrm/iofrm-theme25.css
+
+MD5 VALIDATION:
+  - OK          app/app/src/models/Ponto.php
+      local:  43bb0edeff8e804b1c9d66375a652ae2
+      remote: 43bb0edeff8e804b1c9d66375a652ae2
+  - OK          app/app/src/models/PontoFolha.php
+      local:  c954b70399a9403278e5e63f3c15f5a7
+      remote: c954b70399a9403278e5e63f3c15f5a7
+  - OK          app/app/templates/login/login.twig
+      local:  c48faf4ff22453ca17ec01984e1e8b7f
+      remote: c48faf4ff22453ca17ec01984e1e8b7f
+  - OK          app/app/templates/theme/base.login.twig
+      local:  21f47c4d84590c6f938982b7083b0eab
+      remote: 21f47c4d84590c6f938982b7083b0eab
+  - OK          app/public/assets/js/global/oauth.js
+      local:  38747f3c306ab396d94c08f232cb4c34
+      remote: 38747f3c306ab396d94c08f232cb4c34
+  - OK          app/public/assets/js/local/colaborador_res_form.js
+      local:  b5a6da12ef2a11817ed23ceeb96469ce
+      remote: b5a6da12ef2a11817ed23ceeb96469ce
+  - OK          app/public/assets/plugins/iofrm/iofrm-theme25.css
+      local:  0c8e32912b949b1cacc150e54287cebf
+      remote: 0c8e32912b949b1cacc150e54287cebf
+
+LAST 5 COMMITS:
+  6065cdb 2026-05-31 15:47:37 -0300 fix: ajusta login e reloginho do america-servis
+  e348e03 2026-05-31 10:36:22 -0300 chore: release manifest america-servis 2026-05-31 10-36-21
+  eb3c9bb 2026-05-30 11:05:27 -0300 chore: release manifest brasil-servis 2026-05-30 11-05-26
+  cb06925 2026-05-30 11:02:05 -0300 fix: corrige write_array_to_file para set -e
+  3d7a04a 2026-05-30 10:22:01 -0300 refactor: publica clientes em lote com validacao unica
+=====================================
