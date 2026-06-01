@@ -5,43 +5,62 @@ function fcCarregarItens(){
             "pk": ""
         };
         var arrCarregar = carregarController("propostas_facilities", "listarPropostaDetalhada", objParametros);
+        var dados = [];
 
-        if(arrCarregar.status == true){
-            for(var i=0; i<arrCarregar.data.length; i++){
+        if(arrCarregar && Array.isArray(arrCarregar.data)){
+            dados = arrCarregar.data;
+        }
+
+        if(arrCarregar && arrCarregar.status == true){
+            if(dados.length === 0){
+                $('#itens').html(
+                    '<div class="row"><div class="col-md-1">&nbsp;</div><div class="col-md-10">' +
+                    '<div class="alert alert-warning mb-3">Nenhum item de proposta foi configurado para este cliente.</div>' +
+                    '</div></div>'
+                );
+                $('#totais_itens').html('');
+                return;
+            }
+
+            for(var i=0; i<dados.length; i++){
+                var subGrupos = Array.isArray(dados[i]['SubGrupos']) ? dados[i]['SubGrupos'] : [];
+                var itens = Array.isArray(dados[i]['Itens']) ? dados[i]['Itens'] : [];
+
                 html+='<div class="row">';
                 html+='   <div class="col-md-1">';
                 html+='       &nbsp;';
                 html+='   </div>';
                 html+='   <div class="col-md-10">';
-                html+="       <h5>"+arrCarregar.data[i].ds_nome_grupo+"</h5>";
+                html+="       <h5>"+dados[i].ds_nome_grupo+"</h5>";
                 html+='       <hr style="border: solid 1px black; margin-top:0px">';
                 html+='   </div>';
                 html+='</div>';
-                if(arrCarregar.data[i]['SubGrupos'].length > 0){
-                    for(var x=0; x<arrCarregar.data[i]['SubGrupos'].length; x++){
+                if(subGrupos.length > 0){
+                    for(var x=0; x<subGrupos.length; x++){
+                        var itensSubGrupos = Array.isArray(subGrupos[x].ItensSubGrupos) ? subGrupos[x].ItensSubGrupos : [];
                         html+='<div class="row">';
                         html+='   <div class="col-md-1">';
                         html+='       &nbsp;';
                         html+='   </div>';
                         html+='   <div class="col-md-10">';
-                        html+='       <h6>'+ arrCarregar.data[i].SubGrupos[x].ds_nome_grupo +'</h6>';
+                        html+='       <h6>'+ subGrupos[x].ds_nome_grupo +'</h6>';
                         html+='       <hr style="border: solid 0.2px black; margin-top:0px">';
                         html+='   </div>';
                         html+='</div>';
-                        for(var j=0; j<arrCarregar.data[i].SubGrupos[x].ItensSubGrupos.length;j++){
+                        for(var j=0; j<itensSubGrupos.length;j++){
                             html+='<div class="row">';
                             html+='   <div class="col-md-1">';
                             html+='       &nbsp;';
                             html+='   </div>';
                             html+='   <div class="col-md-6">';
-                            html+='       <label><b>'+ arrCarregar.data[i].SubGrupos[x].ItensSubGrupos[j].ds_label +':&nbsp;</b></label>';
+                            html+='       <label><b>'+ itensSubGrupos[j].ds_label +':&nbsp;</b></label>';
                             html+='   </div>';
                             html+='   %<div class="col-md-1" align="rigth">';
-                            html+='        <input type="hidden" class="form-control form-control-sm pk'+arrCarregar.data[i].SubGrupos[x].ItensSubGrupos[j].pk+'">';
-                            html+='        <input type="Text" name="valorPorcentagem'+arrCarregar.data[i].pk+'[]" id="valorPorcentagem'+arrCarregar.data[i].SubGrupos[x].pk+'"  onchange="fcPorcentagensTotaisSubGrupos('+arrCarregar.data[i].SubGrupos[x].pk+', '+arrCarregar.data[i].pk+')" class="form-control form-control-sm percentual'+arrCarregar.data[i].SubGrupos[x].ItensSubGrupos[j].pk+'">';
+                            html+='        <input type="hidden" class="form-control form-control-sm pk'+itensSubGrupos[j].pk+'">';
+                            html+='        <input type="Text" name="valorPorcentagem'+dados[i].pk+'[]" id="valorPorcentagem'+subGrupos[x].pk+'"  onchange="fcPorcentagensTotaisSubGrupos('+subGrupos[x].pk+', '+dados[i].pk+')" class="form-control form-control-sm percentual'+itensSubGrupos[j].pk+'">';
                             html+='   </div>';
                             html+='   R$<div class="col-md-2" align="rigth">';
-                            html+='        <input type="Text" name="valor'+arrCarregar.data[i].pk+'[]" id="valor'+arrCarregar.data[i].SubGrupos[x].pk+'" onkeypress="mascara(this, moeda)" onchange="fcTotaisSubGrupos('+arrCarregar.data[i].SubGrupos[x].pk+', '+arrCarregar.data[i].pk+')" class="form-control form-control-sm valor'+arrCarregar.data[i].SubGrupos[x].ItensSubGrupos[j].pk+'" value="0,00">';
+                            html+='        <input type="Text" name="valor'+dados[i].pk+'[]" id="valor'+subGrupos[x].pk+'" onkeypress="mascara(this, moeda)" onchange="fcTotaisSubGrupos('+subGrupos[x].pk+', '+dados[i].pk+')" class="form-control form-control-sm valor'+itensSubGrupos[j].pk+'" value="0,00">';
                             html+='   </div>';
                             html+='</div>';
 
@@ -52,33 +71,33 @@ function fcCarregarItens(){
                         html+='       &nbsp;';
                         html+='   </div>';
                         html+='   <div class="col-md-2" align="right">';
-                        html+='       <label><b>Totais '+ arrCarregar.data[i].SubGrupos[x].ds_nome_grupo +' &nbsp;</b></label>';
+                        html+='       <label><b>Totais '+ subGrupos[x].ds_nome_grupo +' &nbsp;</b></label>';
                         html+='   </div>';
                         html+='   %<div class="col-md-1" align="rigth">';
-                        html+='        <input type="Text" id="porcentagens'+arrCarregar.data[i].SubGrupos[x].pk+'" class="form-control form-control-sm">';
+                        html+='        <input type="Text" id="porcentagens'+subGrupos[x].pk+'" class="form-control form-control-sm">';
                         html+='   </div>';
                         html+='   R$<div class="col-md-2" align="right">';
-                        html+='        <input type="Text" id="totais'+arrCarregar.data[i].SubGrupos[x].pk+'" class="form-control form-control-sm" value="0,00">';
+                        html+='        <input type="Text" id="totais'+subGrupos[x].pk+'" class="form-control form-control-sm" value="0,00">';
                         html+='   </div>';
                         html+='</div>';
                         html+='<br>';
                     }
                 }
-                if(arrCarregar.data[i]['Itens'].length > 0){
-                    for(var l=0; l<arrCarregar.data[i]['Itens'].length; l++){
+                if(itens.length > 0){
+                    for(var l=0; l<itens.length; l++){
                         html+='<div class="row">';
                         html+='   <div class="col-md-1">';
                         html+='       &nbsp;';
                         html+='   </div>';
                         html+='   <div class="col-md-6">';
-                        html+='       <label><b>'+ arrCarregar.data[i].Itens[l].ds_label +':&nbsp;</b></label>';
+                        html+='       <label><b>'+ itens[l].ds_label +':&nbsp;</b></label>';
                         html+='   </div>';
                         html+='   %<div class="col-md-1" align="rigth">';
-                        html+='        <input type="hidden" class="form-control form-control-sm pk'+arrCarregar.data[i].Itens[l].pk+'">';
-                        html+='        <input type="Text" name="valorPorcentagem'+arrCarregar.data[i].pk+'[]" onchange="fcPorcentagensTotaisGrupos('+arrCarregar.data[i].pk+')" class="form-control form-control-sm percentual'+arrCarregar.data[i].Itens[l].pk+'">';
+                        html+='        <input type="hidden" class="form-control form-control-sm pk'+itens[l].pk+'">';
+                        html+='        <input type="Text" name="valorPorcentagem'+dados[i].pk+'[]" onchange="fcPorcentagensTotaisGrupos('+dados[i].pk+')" class="form-control form-control-sm percentual'+itens[l].pk+'">';
                         html+='   </div>';
                         html+='   R$<div class="col-md-2" align="rigth">';
-                        html+='        <input type="Text" name="valor'+arrCarregar.data[i].pk+'[]" onkeypress="mascara(this, moeda)" onchange="fcTotaisGrupos('+arrCarregar.data[i].pk+')" class="form-control form-control-sm valor'+arrCarregar.data[i].Itens[l].pk+'" value="0,00">';
+                        html+='        <input type="Text" name="valor'+dados[i].pk+'[]" onkeypress="mascara(this, moeda)" onchange="fcTotaisGrupos('+dados[i].pk+')" class="form-control form-control-sm valor'+itens[l].pk+'" value="0,00">';
                         html+='   </div>';
                         html+='</div>';
                     }
@@ -89,13 +108,13 @@ function fcCarregarItens(){
                 html+='       &nbsp;';
                 html+='   </div>';
                 html+='   <div class="col-md-2" align="right">';
-                html+='       <label><b>Total '+arrCarregar.data[i].ds_nome_grupo +' &nbsp;</b></label>';
+                html+='       <label><b>Total '+dados[i].ds_nome_grupo +' &nbsp;</b></label>';
                 html+='   </div>';
                 html+='   %<div class="col-md-1" align="rigth">';
-                html+='        <input type="Text" id="porcentagens'+arrCarregar.data[i].pk+'" class="form-control form-control-sm">';
+                html+='        <input type="Text" id="porcentagens'+dados[i].pk+'" class="form-control form-control-sm">';
                 html+='   </div>';
                 html+='   R$<div class="col-md-2" align="right">';
-                html+='        <input type="Text" id="totais'+arrCarregar.data[i].pk+'" class="form-control form-control-sm" value="0,00">';
+                html+='        <input type="Text" id="totais'+dados[i].pk+'" class="form-control form-control-sm" value="0,00">';
                 html+='   </div>';
                 html+='</div>';
                 html+='<br>';
@@ -103,19 +122,19 @@ function fcCarregarItens(){
             $('#itens').html(html)
 
             var htmlTotais = "";
-            for(var y=0; y<arrCarregar.data.length; y++){
+            for(var y=0; y<dados.length; y++){
                 htmlTotais+='<div class="row">';
                 htmlTotais+='   <div class="col-md-1">';
                 htmlTotais+='       &nbsp;';
                 htmlTotais+='   </div>';
                 htmlTotais+='   <div class="col-md-6">';
-                htmlTotais+='       <label><b>'+ arrCarregar.data[y].ds_nome_grupo +':&nbsp;</b></label>';
+                htmlTotais+='       <label><b>'+ dados[y].ds_nome_grupo +':&nbsp;</b></label>';
                 htmlTotais+='   </div>';
                 htmlTotais+='   %<div class="col-md-1" align="rigth">';
-                htmlTotais+='        <input type="Text" name="porcentagemFinal[]" id="porcentagensFinais'+arrCarregar.data[y].pk+'" class="form-control form-control-sm">';
+                htmlTotais+='        <input type="Text" name="porcentagemFinal[]" id="porcentagensFinais'+dados[y].pk+'" class="form-control form-control-sm">';
                 htmlTotais+='   </div>';
                 htmlTotais+='   R$<div class="col-md-2" align="rigth">';
-                htmlTotais+='        <input type="Text" name="totalFinal[]" id="totalFinal'+arrCarregar.data[y].pk+'" onkeypress="mascara(this, moeda)" class="form-control form-control-sm" value="0,00">';
+                htmlTotais+='        <input type="Text" name="totalFinal[]" id="totalFinal'+dados[y].pk+'" onkeypress="mascara(this, moeda)" class="form-control form-control-sm" value="0,00">';
                 htmlTotais+='   </div>';
                 htmlTotais+='</div>';
             }
@@ -137,7 +156,9 @@ function salvarItensProposta(pk){
             "pk": ""
         };
         var arrCarregar = carregarController("propostas_facilities", "pegarDadosItens", objParametros);
-        for(var i=0; i<arrCarregar.data.length; i++){
+        var dados = (arrCarregar && Array.isArray(arrCarregar.data)) ? arrCarregar.data : [];
+
+        for(var i=0; i<dados.length; i++){
 
             var ds_valor = "";
             var ds_percentual = "";
@@ -145,11 +166,11 @@ function salvarItensProposta(pk){
             var propostas_facilities_grupos_subgrupos_pk = "";
             var ic_status = 1;
 
-            if(arrCarregar.data[i]['grupos'].length > 0){
-                for(var l=0; l<arrCarregar.data[i]['grupos'].length; l++){
+            if(Array.isArray(dados[i]['grupos']) && dados[i]['grupos'].length > 0){
+                for(var l=0; l<dados[i]['grupos'].length; l++){
                     var arrDados = [];
                     var arrKeys = [];
-                    for(var x=0; x<arrCarregar.data[i]['grupos'][l]['Itens'].length; x++){
+                    for(var x=0; x<dados[i]['grupos'][l]['Itens'].length; x++){
                         arrKeys[0] = "pk";
                         arrKeys[1] = "propostas_facilities_grupos_subgrupos_pk";
                         arrKeys[2] = "propostas_facilities_label_pk";
@@ -158,8 +179,8 @@ function salvarItensProposta(pk){
                         arrKeys[5] = "ic_status";
                         arrKeys[6] = "propostas_facilities_pk";
 
-                        propostas_facilities_label_pk = arrCarregar.data[i]['grupos'][l]['Itens'][x]['pk'];
-                        propostas_facilities_grupos_subgrupos_pk = arrCarregar.data[i]['grupos'][l]['Itens'][x]['propostas_facilities_grupos_subgrupos_pk']
+                        propostas_facilities_label_pk = dados[i]['grupos'][l]['Itens'][x]['pk'];
+                        propostas_facilities_grupos_subgrupos_pk = dados[i]['grupos'][l]['Itens'][x]['propostas_facilities_grupos_subgrupos_pk']
 
                         ds_valor = moeda2float($(".valor"+propostas_facilities_label_pk).val());
                         ds_percentual = $(".percentual"+propostas_facilities_label_pk).val();
@@ -180,11 +201,11 @@ function salvarItensProposta(pk){
                     }
                 }
             }
-            if(arrCarregar.data[i]['SubGrupos'].length > 0){
-                for(var l=0; l<arrCarregar.data[i]['SubGrupos'].length; l++){
+            if(Array.isArray(dados[i]['SubGrupos']) && dados[i]['SubGrupos'].length > 0){
+                for(var l=0; l<dados[i]['SubGrupos'].length; l++){
                     var arrDados = [];
                     var arrKeys = [];
-                    for(var x=0; x<arrCarregar.data[i]['SubGrupos'][l]['ItensSubGrupos'].length; x++){
+                    for(var x=0; x<dados[i]['SubGrupos'][l]['ItensSubGrupos'].length; x++){
                         arrKeys[0] = "pk";
                         arrKeys[1] = "propostas_facilities_grupos_subgrupos_pk";
                         arrKeys[2] = "propostas_facilities_label_pk";
@@ -193,8 +214,8 @@ function salvarItensProposta(pk){
                         arrKeys[5] = "ic_status";
                         arrKeys[6] = "propostas_facilities_pk";
 
-                        propostas_facilities_label_pk = arrCarregar.data[i]['SubGrupos'][l]['ItensSubGrupos'][x]['pk'];
-                        propostas_facilities_grupos_subgrupos_pk = arrCarregar.data[i]['SubGrupos'][l]['ItensSubGrupos'][x]['subgrupo_pk']
+                        propostas_facilities_label_pk = dados[i]['SubGrupos'][l]['ItensSubGrupos'][x]['pk'];
+                        propostas_facilities_grupos_subgrupos_pk = dados[i]['SubGrupos'][l]['ItensSubGrupos'][x]['subgrupo_pk']
 
                         ds_valor = $(".valor"+propostas_facilities_label_pk).val();
                         ds_percentual = $(".percentual"+propostas_facilities_label_pk).val();
@@ -379,6 +400,9 @@ function fcCarregarDadosProposta(){
             "pk":  $("#pk").val()
         };
         var arrCarregar = carregarController("propostas_facilities", "listarDadosPropostaDetalhada", objParametros);
+        if(!arrCarregar || !Array.isArray(arrCarregar.data) || arrCarregar.data.length === 0){
+            return;
+        }
         $("#leads_pk_proposta_detalhada").val(arrCarregar.data[0]['leads_pk'])
         $("#ic_tipo_proposta").val(arrCarregar.data[0]['ic_tipo_proposta'])
         $("#produtos_servicos_pk_proposta").val(arrCarregar.data[0]['produtos_servicos_pk'])

@@ -99,6 +99,7 @@ class PropostaFacilities {
         $retorno = new \StdClass; //Estrutura de retorno para controller
         $retorno->status = false; //Retorno setado status como false
         $retorno->data = []; //Retorno data setado como vazio
+        $result = [];
 
         $sql="";
         $sql.="Select  pk";
@@ -196,6 +197,7 @@ class PropostaFacilities {
         $retorno = new \StdClass; //Estrutura de retorno para controller
         $retorno->status = false; //Retorno setado status como false
         $retorno->data = []; //Retorno data setado como vazio
+        $result = [];
 
         $sql="";
         $sql.=" select pf.pk,";
@@ -219,6 +221,13 @@ class PropostaFacilities {
         $stmt = $this->pdo->prepare( $sql );
         $stmt->execute();
         $query = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+        if (count($query) === 0) {
+            $retorno->status = true;
+            $retorno->message = 'Nenhuma proposta encontrada';
+            $retorno->data = $result;
+            return $retorno;
+        }
 
         $sqlItens = "";
         $sqlItens .= "select pfi.pk,";
@@ -377,6 +386,7 @@ class PropostaFacilities {
         $retorno = new \StdClass; //Estrutura de retorno para controller
         $retorno->status = false; //Retorno setado status como false
         $retorno->data = []; //Retorno data setado como vazio
+        $result = [];
 
         $sql = "";
         $sql.="Select  pk";
