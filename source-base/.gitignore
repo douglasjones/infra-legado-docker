@@ -1,0 +1,12 @@
+.DS_Store
+.idea/
+*.bak
+*~
+*.log
+*.pid
+
+**/vendor/
+**/node_modules/
+
+facilities-base/logs/*
+!facilities-base/logs/.gitkeep

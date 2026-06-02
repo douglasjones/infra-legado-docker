@@ -1,0 +1,1050 @@
+{% if local == 2%}
+    {% set area = 'operacional' %}
+{% else %}
+    {% set area = 'rh' %}
+{% endif %}
+{% extends "theme/base.twig" %}
+{% block JSfiles %}
+    {{ parent() }}
+    <script src="/assets/plugins/jquery/js/jquery.datatables1.10.19.js"></script>
+    <script src="/assets/plugins/jquery/js/dataTables.bootstrap4.min.js"></script>
+    <script src="/assets/plugins/bootstrap-wizard/bootstrap.wizard.js" type="text/javascript"></script>
+    <script src="/assets/plugins/daterangepicker/daterangepicker.js?v=14"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/js/select2.min.js"></script>
+    <script src="{{ base_url() }}/assets/plugins/datepicker/js/bootstrap-datepicker.min.js"></script>
+    <script src="{{ base_url() }}/assets/plugins/daterangepicker/daterangepicker.js"></script>
+    <script src="{{ base_url() }}/assets/plugins/datepicker/locales/bootstrap-datepicker.pt-BR.min.js" charset="UTF-8"></script>
+    <script src="/assets/js/local/colaborador_cad_form.js?v=14"></script>
+
+{% endblock %}
+{% block title %}
+    Colaborador
+{% endblock %}
+{% block CSSfiles %}
+    {{ parent() }}
+    <link href="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/css/select2.min.css" rel="stylesheet" />
+    <link href='{{ base_url() }}/assets/plugins/datepicker/css/bootstrap-datepicker.min.css' rel='stylesheet'>
+    <link href='{{ base_url() }}/assets/plugins/bootstrap/css/dataTables.bootstrap4.min.css' rel='stylesheet' type='text/css'>
+    <link href="/assets/plugins/bootstrap-wizard/bootstrap.wizard.css" rel="stylesheet" type="text/css">
+    <link href='/assets/plugins/daterangepicker/daterangepicker.css?v={{ JSversion }}' rel='stylesheet' type='text/css'>
+
+{% endblock %}
+{% block content %}
+    <BR>
+    <BR>
+    <BR>
+    <main class="content_wrapper">
+        <div class="container">
+            <div class="container col-md-12">
+                <div class="row">
+                    <div class="col-md-8">
+                        &nbsp;
+                    </div>
+                </div>
+                <div class="row ">
+                    <div>
+                        <div class="col-lg" style="max-width:1245px;margin-left: auto;margin-right: auto;background-color: #F7F7F7;">
+                            <div class="shadow-lg bg-white rounded mb-4" style="padding: 15px;">
+                                <div class='row'>
+                                    <div class="card-title col-sm-4">
+                                        <h5 style= "color:#FF5403"  >Colaborador</h5>
+                                    </div>
+                                    <div class='col-sm-8' align="Right" >
+                                        <button type="button" class="btn btn-secondary btn-sm" id="cmdCancelar">Voltar</button>&nbsp;
+                                        <button type="button" class="btn btn-primary btn-sm" id="cmdEnviarTudo">Salvar</button>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <input type="hidden" id="local" value="{{ local }}">
+                                    <input type="hidden" id="colaborador_pk" value="{{ pk }}">
+                                    <input type="hidden" id="usuario_logado" value="{{ session['session_user']['par2'] }}">
+                                    <input type="hidden" id="dt_atual" value="{{"now"|date("d/m/Y")  }}">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <ul class="nav nav-pills nav-fill" id="myTab" role="tablist">
+                                                <li class="nav-item">
+                                                    <a class="nav-link active"  id="dados-tab" data-toggle="tab" href="#dados" role="tab" aria-controls="dados" >Dados Cadastrais</a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a class="nav-link" id="funcao-tab" data-toggle="tab" href="#funcao" role="tab" aria-controls="funcao" >Funções</a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a class="nav-link" id="escala-tab" data-toggle="tab" href="#escala" role="tab" aria-controls="funcao" >Escalas</a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a class="nav-link" id="documento-tab" data-toggle="tab" href="#documento" role="tab" aria-controls="documento" >Documentos</a>
+                                                </li>
+
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="tab-content" id="myTabContent">
+                                        <div class="tab-pane fade show active" id="dados" role="tabpanel" aria-labelledby="dados-tab">
+                                            <br>
+                                            <br>
+                                            <div class='row'>
+                                                <div class='col-md-4'>
+                                                    <div id='ds_imagem'></div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-11">
+                                                    <div class='col-md-2'>
+                                                        &nbsp; &nbsp; &nbsp;
+                                                    </div>
+                                                    <h4>Dados Cadastrais</h4>
+                                                    <hr style='height:1px; border:none; color:#14074F; background-color:#14074F; margin-top: 0px; margin-bottom: 0px;'>
+                                                    <div class='col-md-2'>
+                                                        &nbsp;
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class='row'>
+                                                <div class='col-md-6'>
+                                                    <label for='ds_colaborador'>Colaborador (Nome Completo):&nbsp;</label>
+                                                    <input type='text' class='form-control form-control-sm' id='ds_colaborador' name='ds_colaborador' required >
+                                                </div>
+                                                <div class='col-md-2'>
+                                                    <label for='ds_cel'>Cel:&nbsp;</label>
+                                                    <input type='text' class='form-control form-control-sm'  maxlength="14" id='ds_cel' name='ds_cel'  required>
+                                                </div>
+                                            </div>
+
+                                            <div class='row' id="alert_ds_colaborador" style="display:none">
+                                                <div class='col-md-4'>
+                                                    <strong style="color: red">Por favor, informe Colaborador (Nome Completo)</strong>
+                                                </div>
+                                            </div>
+
+                                            <div class='row'>
+                                                <div class='col-md-3'>
+                                                    <label for='ds_cel2'>Nacionalidade:&nbsp;</label>
+                                                    <input type='text' class='form-control form-control-sm' id='ds_nacionalidade' name='ds_nacionalidade'  >
+                                                </div>
+
+                                                <div class='col-md-2'>
+                                                    <label for='generos_pk'>Gênero:&nbsp;</label>
+                                                    <select class='form-control form-control-sm'  id='generos_pk' name='generos_pk' required>
+                                                        <option value="1">Masculino</option>
+                                                        <option value="2">Feminino</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            <div class='row'>
+                                                <div class='col-md-2'>
+                                                    <label for='dt_nascimento'>Data Nasc.:&nbsp;</label>
+                                                    <input type='text' class='form-control form-control-sm' maxlength="10" id='dt_nascimento' name='dt_nascimento' >
+                                                </div>
+                                            </div>
+                                            <div class='row' id="alert_generos_pk" style="display:none">
+                                                <div class='col-md-4'>
+                                                    &nbsp;
+                                                </div>
+                                                <div class='col-md-2'>
+                                                    <strong style="color: red">Por favor, informe Gênero</strong>
+                                                </div>
+                                            </div>
+                                            <div class='row' id="alert_dt_nascimento" style="display:none">
+                                                <div class='col-md-2'>
+                                                    <strong style="color: red">Por favor, informe Data Nasc.</strong>
+                                                </div>
+                                            </div>
+                                            <div class='row'>
+                                                <div class='col-md-6'>
+                                                    <label for='ds_cel2'>Nome do Pai:&nbsp;</label>
+                                                    <input type='text' class='form-control form-control-sm' id='ds_nome_pai' name='ds_nome_pai'  >
+                                                </div>
+                                            </div>
+                                            <div class='row'>
+                                                <div class='col-md-6'>
+                                                    <label for='ic_whatsapp2'>Nome da Mãe:&nbsp;</label>
+                                                    <input type='text' class='form-control form-control-sm' id='ds_nome_mae' name='ds_nome_mae'  >
+                                                </div>
+                                            </div>
+                                            <p>
+                                            <div class="row">
+                                                <div class="col-md-10">
+                                                    <h5>Dados de Contratação</h5>
+                                                    <hr style='height:1px; border:none; color:#14074F; background-color:#14074F; margin-top: 0px; margin-bottom: 0px;'>
+                                                </div>
+                                            </div>
+                                            <div class='row'>
+                                                <div class='col-md-3'>
+                                                    <label for='ds_uf'>Grupos:</label>
+                                                    <select id="grupos_pk" class='form-control form-control-sm chzn-select'  name="grupos_pk">
+                                                        <option ></option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class='row'>
+                                                <div class='col-md-3'>
+                                                    <label for='matricula'>Regime Contratação:&nbsp;</label>
+                                                    <select  class='form-control form-control-sm' id='regime_contratacao_pk' name='regime_contratacao_pk'  >
+                                                        <option></option>
+                                                        <option value="1">Mensalista</option>
+                                                        <option value="2">Horista</option>
+                                                    </select>
+                                                </div>
+                                                <div class='col-md-2'>
+                                                    <label for='ds_rg'>Carga Horária:&nbsp;</label>
+                                                    <input type='text' class='form-control form-control-sm' maxlength="5" id='ds_carga_horaria_semanal' name='ds_carga_horaria_semanal' >
+                                                </div>
+                                                <div class='col-md-2'>
+                                                    <label for='ds_salario'>Salário R$:&nbsp;</label>
+                                                    <input type='text' class='form-control form-control-sm'  id='vl_salario' name='vl_salario' >
+                                                </div>
+                                            </div>
+                                            <div class='row'>
+                                                <div class='col-md-4'>
+                                                    <label for='matricula'>Matricula:&nbsp;</label>
+                                                    <input type='text' class='form-control form-control-sm' id='ds_matricula' name='ds_matricula'  >
+                                                </div>
+                                                <div class='col-md-3'>
+                                                    <label for='ds_rg'>R.E (e-social):&nbsp;</label>
+                                                    <input type='text' class='form-control form-control-sm' maxlength="9" id='ds_re' name='ds_re' >
+                                                </div>
+                                            </div>
+                                            <div class='row'>
+                                                <div class='col-md-2'>
+                                                    <label for='ic_funcionario'>Funcionário:&nbsp;</label>
+                                                    <select class='form-control form-control-sm'  id='ic_funcionario' name='ic_funcionario' />
+                                                    <option value='1'>Sim</option>
+                                                    <option value='2'>Não</option>
+                                                    </select>
+                                                </div>
+                                                <div class='col-md-3'>
+                                                    <label for='ic_status'>Status Colaborador no Sistema:&nbsp;</label>
+                                                    <select class='form-control form-control-sm'  id='ic_status' name='ic_status' required/>
+                                                    <option value='1'>Ativo</option>
+                                                    <option value='2'>Demitido</option>
+                                                    <option value='3'>Afastado</option>
+                                                    <option value='4'>Férias</option>
+                                                    <option value='5'>Currículo</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class='row' id="alert_ic_status" style="display:none">
+                                                <div class='col-md-7'>
+                                                    &nbsp;
+                                                </div>
+                                                <div class='col-md-2'>
+                                                    <strong style="color: red">Por favor, informe Status (Ativo no Sistema ?).</strong>
+                                                </div>
+                                            </div>
+                                            <p>
+                                            <!--div class="row">
+                                                <div class="col-md-10">
+                                                    <h5>Dados de Contato do Colaborador</h5>
+                                                    <hr style='height:1px; border:none; color:#14074F; background-color:#14074F; margin-top: 0px; margin-bottom: 0px;'>
+                                                </div>
+                                            </div-->
+                                            <p>
+                                            <div class="row">
+                                                <div class="col-md-10">
+                                                    <h5>Documentação do Colaborador</h5>
+                                                    <hr style='height:1px; border:none; color:#14074F; background-color:#14074F; margin-top: 0px; margin-bottom: 0px;'>
+                                                </div>
+                                            </div>
+                                            <div class='row'>
+                                                <div class='col-md-3'>
+                                                    <label for='ds_cpf'>CPF:&nbsp;</label>
+                                                    <input type='text' class='form-control form-control-sm' maxlength="14" id='ds_cpf' name='ds_cpf' >
+                                                </div>
+                                            </div>
+                                            <div class='row' id="alert_ds_cpf" style="display:none">
+                                                <div class='col-md-3'>
+                                                    <strong style="color: red">Por favor, informe CPF.</strong>
+                                                </div>
+                                            </div>
+                                            <div class='row'>
+                                                <div class='col-md-2'>
+                                                    <label for='ds_rg'>RG/RNE:&nbsp;</label>
+                                                    <input type='text' class='form-control form-control-sm' maxlength="20" id='ds_rg' name='ds_rg' >
+                                                </div>
+                                                <div class='col-md-2'>
+                                                    <label for='ds_rg'>Orgão Expedição :&nbsp;</label>
+                                                    <input type='text' class='form-control form-control-sm' maxlength="9" id='ds_org_exp' name='ds_org_exp' >
+                                                </div>
+                                                <div class='col-md-3'>
+                                                    <label for='ds_rg'>Dt. Expedição :&nbsp;</label>
+                                                    <input type='text' class='form-control form-control-sm' maxlength="10" id='dt_expedicao' name='dt_expedicao' >
+                                                </div>
+                                                <div class='col-md-2'>
+                                                    <label for='ds_uf_rg'>UF RG:&nbsp;</label>
+                                                    <select class='form-control form-control-sm'  id='ds_uf_rg' name='ds_uf_rg'>
+                                                        <option></option>
+                                                        <option>AC</option>
+                                                        <option>AL</option>
+                                                        <option>AP</option>
+                                                        <option>AM</option>
+                                                        <option>BA</option>
+                                                        <option>CE</option>
+                                                        <option>DF</option>
+                                                        <option>ES</option>
+                                                        <option>GO</option>
+                                                        <option>MA</option>
+                                                        <option>MT</option>
+                                                        <option>MS</option>
+                                                        <option>MG</option>
+                                                        <option>PA</option>
+                                                        <option>PB</option>
+                                                        <option>PR</option>
+                                                        <option>PE</option>
+                                                        <option>PI</option>
+                                                        <option>RJ</option>
+                                                        <option>RN</option>
+                                                        <option>RS</option>
+                                                        <option>RO</option>
+                                                        <option>RR</option>
+                                                        <option>SC</option>
+                                                        <option>SP</option>
+                                                        <option>SE</option>
+                                                        <option>TO</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class='row' id="alert_ds_rg" style="display:none">
+                                                <div class='col-md-2'>
+                                                    <strong style="color: red">Por favor, informe RG/RNE.</strong>
+                                                </div>
+                                            </div>
+                                            <div class='row'>
+                                                <div class='col-md-3'>
+                                                    <label for='ds_rg'>Titulo Eleitoral:&nbsp;</label>
+                                                    <input type='text' class='form-control form-control-sm' id='ds_titulo_eleitoral' name='ds_titulo_eleitoral' >
+                                                </div>
+                                                <div class='col-md-3'>
+                                                    <label for='ds_rg'>Zona Eleitoral:&nbsp;</label>
+                                                    <input type='text' class='form-control form-control-sm' id='ds_zona_eleitoral' name='ds_zona_eleitoral' >
+                                                </div>
+                                                <div class='col-md-3'>
+                                                    <label for='ds_rg'>Seção:&nbsp;</label>
+                                                    <input type='text' class='form-control form-control-sm'  id='ds_secao' name='ds_secao' >
+                                                </div>
+                                            </div>
+                                            <div class='row'>
+                                                <div class='col-md-3'>
+                                                    <label for='ds_rg'>CTPS:&nbsp;</label>
+                                                    <input type='text' class='form-control form-control-sm'  id='ds_ctps' name='ds_ctps' >
+                                                </div>
+                                                <div class='col-md-2'>
+                                                    <label for='ds_rg'>Série:&nbsp;</label>
+                                                    <input type='text' class='form-control form-control-sm' id='ds_serie' name='ds_serie' >
+                                                </div>
+                                            </div>
+                                            <div class='row'>
+                                                <div class='col-md-3'>
+                                                    <label for='ds_rg'>Certificado Reservista:&nbsp;</label>
+                                                    <input type='text' class='form-control form-control-sm' id='ds_certificado_reservista' name='ds_certificado_reservista' >
+                                                </div>
+                                            </div>
+                                            <div class='row'>
+                                                <div class='col-md-6'>
+                                                    <label for='ds_rg'>Numéro Cartão SUS:&nbsp;</label>
+                                                    <input type='text' class='form-control form-control-sm' id='ds_cartao_sus' name='ds_cartao_sus' >
+                                                </div>
+                                            </div>
+                                            <p>
+                                            <div class="row">
+                                                <div class="col-md-10">
+                                                    <h5>Dados Bancários</h5>
+                                                    <hr style='height:1px; border:none; color:#14074F; background-color:#14074F; margin-top: 0px; margin-bottom: 0px;'>
+                                                </div>
+                                            </div>
+                                            <div class='row'>
+                                                <div class='col-md-2'>
+                                                    <label for='generos_pk'>Tipo Conta:&nbsp;</label>
+                                                    <select class='form-control form-control-sm'  id='tipo_conta_bancaria' name='tipo_conta_bancaria'>
+                                                        <option></option>
+                                                        <option value="1">Conta Corrente</option>
+                                                        <option value="2">Conta Poupança</option>
+                                                        <option value="2">Conta Salário</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class='row'>
+                                                <div class='col-md-2'>
+                                                    <label for='generos_pk'>Banco:&nbsp;</label>
+                                                    <select class='form-control form-control-sm chzn-select'  id='bancos_pk' name='bancos_pk'>
+                                                        <option></option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class='row'>
+                                                <div class='col-md-2'>
+                                                    <label for='ds_cel2'>Agência:&nbsp;</label>
+                                                    <input type='text' class='form-control form-control-sm' id='ds_agencia' maxlength="12" name='ds_agencia'  >
+                                                </div>
+                                                <div class='col-md-2'>
+                                                    <label for='ic_whatsapp2'>Conta:&nbsp;</label>
+                                                    <input type='text' class='form-control form-control-sm' maxlength="15" id='ds_conta' name='ds_conta'  >
+                                                </div>
+                                                <div class='col-md-2'>
+                                                    <label for='ic_whatsapp2'>Digito:&nbsp;</label>
+                                                    <input type='text' class='form-control form-control-sm'   id='ds_digito' maxlength="5" name='ds_digito'  >
+                                                </div>
+                                                <div class='col-md-4'>
+                                                    <label for='ic_whatsapp2'>PIX:&nbsp;</label>
+                                                    <input type='text' class='form-control form-control-sm'   id='ds_pix'  name='ds_pix'  >
+                                                </div>
+                                            </div>
+                                            <div class='row'>
+                                                <div class='col-md-4'>
+                                                    <label for='ds_cel2'>Favorecido:&nbsp;</label>
+                                                    <input type='text' class='form-control form-control-sm' id='ds_conta_favorecido' name='ds_conta_favorecido'  >
+                                                </div>
+                                            </div>
+                                            <p>
+                                            <div class="row">
+                                                <div class="col-md-10">
+                                                    <h5>Endereço do Colaborador</h5>
+                                                    <hr style='height:1px; border:none; color:#14074F; background-color:#14074F; margin-top: 0px; margin-bottom: 0px;'>
+                                                </div>
+                                            </div>
+                                            <div class='row'>
+                                                <div class='col-md-2'>
+                                                    <label for='ds_cep'>CEP:&nbsp;</label>
+                                                    <input type='text' class='form-control form-control-sm' maxlength="9" id='ds_cep' name='ds_cep' >
+                                                </div>
+                                            </div>
+                                            <div class='row'>
+                                                <div class='col-md-8'>
+                                                    <label for='ds_endereco'>Endereço:&nbsp;</label>
+                                                    <input type='text' class='form-control form-control-sm' id='ds_endereco' name='ds_endereco' >
+                                                </div>
+                                            </div>
+                                            <div class='row'>
+                                                <div class='col-md-1'>
+                                                    <label for='ds_numero'>Número:&nbsp;</label>
+                                                    <input type='text' class='form-control form-control-sm' id='ds_numero' name='ds_numero' >
+                                                </div>
+                                                <div class='col-md-2'>
+                                                    <label for='ds_complemento'>Complemento:&nbsp;</label>
+                                                    <input type='text' class='form-control form-control-sm' id='ds_complemento' name='ds_complemento' >
+                                                </div>
+                                                <div class='col-md-3'>
+                                                    <label for='ds_bairro'>Bairro:&nbsp;</label>
+                                                    <input type='text' class='form-control form-control-sm' id='ds_bairro' name='ds_bairro' >
+                                                </div>
+                                            </div>
+                                            <div class='row'>
+                                                <div class='col-md-4'>
+                                                    <label for='ds_cidade'>Cidade:&nbsp;</label>
+                                                    <input type='text' class='form-control form-control-sm' id='ds_cidade' name='ds_cidade' >
+                                                </div>
+                                                <div class='col-md-2'>
+                                                    <label for='ds_uf'>UF:&nbsp;</label>
+                                                    <select class='form-control form-control-sm'  id='ds_uf' name='ds_uf'>
+                                                        <option></option>
+                                                        <option>AC</option>
+                                                        <option>AL</option>
+                                                        <option>AP</option>
+                                                        <option>AM</option>
+                                                        <option>BA</option>
+                                                        <option>CE</option>
+                                                        <option>DF</option>
+                                                        <option>ES</option>
+                                                        <option>GO</option>
+                                                        <option>MA</option>
+                                                        <option>MT</option>
+                                                        <option>MS</option>
+                                                        <option>MG</option>
+                                                        <option>PA</option>
+                                                        <option>PB</option>
+                                                        <option>PR</option>
+                                                        <option>PE</option>
+                                                        <option>PI</option>
+                                                        <option>RJ</option>
+                                                        <option>RN</option>
+                                                        <option>RS</option>
+                                                        <option>RO</option>
+                                                        <option>RR</option>
+                                                        <option>SC</option>
+                                                        <option>SP</option>
+                                                        <option>SE</option>
+                                                        <option>TO</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <p>
+                                                <br>
+                                            <div class="row">
+                                                <div class="col-md-10">
+                                                    <h5>Dados de Vestuário</h5>
+                                                    <hr style='height:1px; border:none; color:#14074F; background-color:#14074F; margin-top: 0px; margin-bottom: 0px;'>
+                                                </div>
+                                            </div>
+                                            <div class='row'>
+                                                <div class='col-md-2'>
+                                                    <label for='ds_cel2'>N Sapato:&nbsp;</label>
+                                                    <input type='text' class='form-control form-control-sm' id='ds_n_sapato' maxlength="12" name='ds_n_sapato'  >
+                                                </div>
+                                                <div class='col-md-2'>
+                                                    <label for='ic_whatsapp2'>Tamanho Camisa:&nbsp;</label>
+                                                    <input type='text' class='form-control form-control-sm' maxlength="12" id='ds_n_camisa' name='ds_n_camisa'  >
+                                                </div>
+                                                <div class='col-md-2'>
+                                                    <label for='ic_whatsapp2'>Tamanho Calça:&nbsp;</label>
+                                                    <input type='text' class='form-control form-control-sm' maxlength="12"  id='ds_n_calca' maxlength="1" name='ds_n_calca'  >
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane fade" id="funcao" role="tabpanel" aria-labelledby="funcao-tab">
+                                            <br>
+                                            <div class='row'>
+                                                <div class='col-md-12'>
+                                                    <button type="button" id="btn_modal_funcao" class="btn btn-primary btn-sm" >Incluir Função</button>
+                                                </div>
+                                            </div>
+                                            <br>
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <table class="table table-striped table-bordered nowrap " id="tblFuncao">
+                                                        <thead >
+                                                        <tr>
+                                                            <th>Código</th>
+                                                            <th>Função</th>
+                                                            <th>Ação</th>
+                                                        </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane fade" id="escala" role="tabpanel" aria-labelledby="escala-tab">
+                                            <br>
+                                            <div class='row'>
+                                                <div class='col-md-12'>
+                                                    <button type="button" id="btn_modal_escala" class="btn btn-primary btn-sm" >Incluir Escala</button>
+                                                </div>
+                                            </div>
+                                            <br>
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <table class="table table-striped table-bordered nowrap " id="tblEscala">
+                                                        <thead >
+                                                        <tr>
+                                                            <th>Código</th>
+                                                            <th>Colaborador</th>
+                                                            <th>Posto de Trabalho</th>
+                                                            <th>Função</th>
+                                                            <th>Escala</th>
+                                                            <th>Ação</th>
+                                                        </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane fade" id="ocorrencia" role="tabpanel" aria-labelledby="ocorrencia-tab">
+                                            <br>
+                                            <div class='row'>
+                                                <div class='col-md-12'>
+                                                    <button type="button" id="btn_modal_ocorrencia" class="btn btn-primary btn-sm" >Incluir Ocorrência</button>
+                                                </div>
+                                            </div>
+                                            <br>
+                                        </div>
+                                        <div class="tab-pane fade" id="documento" role="tabpanel" aria-labelledby="documento-tab">
+                                            <br>
+                                            <div class='row'>
+                                                <div class='col-md-12'>
+                                                    <button type="button" id="cmdIncluirDocumento" class="btn btn-primary btn-sm" >Incluir Documento</button>
+                                                </div>
+                                            </div>
+                                            <br>
+                                            <div class="col-md-12">
+                                                <table class="table table-striped table-bordered nowrap" style="width:100%" id="tblDocumentos">
+                                                    <thead>
+                                                    <tr>
+                                                        <th>Código</th>
+                                                        <th>Documento</th>
+                                                        <th>Ação</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12" align="Right">
+                                            <hr style='height:1px; border:none; color:#14074F; background-color:#14074F; margin-top: 0px; margin-bottom: 0px;'>
+                                            <br>
+                                            <button type="button" class="btn btn-secondary btn-sm" id="cmdCancelar2">Voltar</button>
+                                            &nbsp;
+                                            <button type="button" class="btn btn-primary btn-sm" id="cmdEnviarTudo2">Salvar</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <!-- Inicio janeja modal para edicao do registro -->
+    <div class="modal fade bd-example-modal-lg" id="janela_funcao" >
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="janela_contatosLabel">Nova Função</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="fecharModalFuncao()">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input type='hidden' class='form-control form-control-sm'  id='acao' name='acao'>
+                    <input type='hidden' class='form-control form-control-sm'  id='funcao_pk' name='funcao_pk'>
+
+                    <div class="row">
+                        <div class='col-md-5'>
+                            <label for='cargos_pk'>Função: </label>
+                            <select class='form-control form-control-sm'  id='cargos_pk' name='cargos_pk'>
+                                <option></option>
+                            </select>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal" onclick="fecharModalFuncao()">Fechar</button>
+                        <button type="button" class="btn btn-primary btn-sm" id="cmdEnviarFuncao"  name="cmdEnviarFuncao">Salvar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!------ESCALA------>
+    <div class="modal fade bd-example-modal-lg" id="janela_escala" >
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="janela_contatosLabel">Nova Escala</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="fecharModalEscala()">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input type='hidden' class='form-control form-control-sm'  id='acaoAgenda' name='acaoAgenda'>
+                    <input type='hidden' class='form-control form-control-sm'  id='escala_agenda_pk' name='escala_agenda_pk'>
+                    <div class='row'>
+                        <div class='col-md-4'>
+                            <label for='ds_uf'>Posto de trabalho:</label>
+                            <select id="escala_leads_pk" class='form-control form-control-sm'  name="escala_leads_pk">
+                                <option ></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class='row'>
+                        <div class='col-md-4'>
+                            <label for='cargos_pk'>Função: </label>
+                            <select class='form-control form-control-sm'  id='escala_cargos_pk' name='escala_cargos_pk'>
+                                <option></option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class='row'>
+                        <div class='col-md-4'>
+                            <label for='dt_inicio_agenda'>Data Início da Escala: </label>
+                            <input type='text' class='form-control form-control-sm' maxlength="10"  id='dt_inicio_agenda' name='dt_inicio_agenda'>
+                        </div>
+                        <div class='col-md-4'>
+                            <label for='dt_fim_agenda'>Data Fim Termino do Contrato: </label>
+                            <input type='text' class='form-control form-control-sm' maxlength="10"  id='dt_fim_agenda' name='dt_fim_agenda'>
+                        </div>
+                    </div>
+                    <div id="exibir_data_cancelamento" style="display:none">
+                        <h6>Cancelar Escala</h6>
+                        <hr style='height:1px; border:none; color:#14074F; background-color:#14074F; margin-top: 0px; margin-bottom: 0px;'>
+                        <div class="row">
+                            <div class='col-md-4'>
+                                <label for='cargos_pk'>Data Cancelamento: </label>
+                                <input class='form-control form-control-sm'  id='dt_cancelamento_agenda_escala' name='dt_cancelamento_agenda_escala' />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class='col-md-6'>
+                                <label for='cargos_pk'>Motivo Cancelamento: </label>
+                                <textarea class='form-control form-control-sm'  id='ds_motivo_cancelamento' name='ds_motivo_cancelamento' /></textarea>
+                            </div>
+                        </div>
+                        <br>
+                    </div>
+                    <div class="row">
+                        <div class='col-md-3' >
+                            <label for='colaboradores_pk_agenda'>Turno: </label>
+                            <select class='form-control form-control-sm'  id='turnos_pk' name='turnos_pk' />
+                            <option></option>
+                            <option value="4">Dia Inteiro</option>
+                            <option value="1">Manhã</option>
+                            <option value="2">Tarde</option>
+                            <option value="3">Noite</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class='col-md-3' >
+                            <label for='colaboradores_pk_agenda'>HR Entrada: </label>
+                            <input  class='form-control form-control-sm' maxlength="5" type='type' name='hr_inicio_expediente' id='hr_inicio_expediente' />
+                        </div>
+                        <div class='col-md-3' >
+                            <label for='colaboradores_pk_agenda'>HR Saída: </label>
+                            <input  class='form-control form-control-sm' maxlength="5" type='type' name='hr_termino_expediente' id='hr_termino_expediente' />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class='col-md-3' >
+                            <label for='colaboradores_pk_agenda'>HR Saída Intervalo: </label>
+                            <input  class='form-control form-control-sm' maxlength="5" type='type' name='hr_inicio_intervalo' id='hr_inicio_intervalo' />
+                        </div>
+                        <div class='col-md-3' >
+                            <label for='colaboradores_pk_agenda'>HR Retorno Intervalo: </label>
+                            <input  class='form-control form-control-sm' maxlength="5" type='type' name='hr_termino_intervalo' id='hr_termino_intervalo' />
+                        </div>
+                        <div class='col-md-3' >
+                            <label for='colaboradores_pk_agenda'>Instrajornada: </label>
+                            <input type="checkbox" name='ic_intrajornada' id='ic_intrajornada' />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class='col-md-4' >
+                            <label for='colaboradores_pk_agenda'>Tipo Escala:</label>
+                            <select class='form-control form-control-sm' id="tipo_escala_pk" name="tipo_escala_pk">
+                                <option ></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row" id="exibir_variacao_escala" style="display: none">
+                        <div class='col-md-4' >
+                            <label for='colaboradores_pk_agenda'>Variação Escala:</label>
+                            <select class='form-control form-control-sm' id="ic_variacao_dias_escala" name="ic_variacao_dias_escala">
+                                <option ></option>
+                                <option value="1">Impar</option>
+                                <option value="2">Par</option>
+                            </select>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row">
+                        <div class='col-md-8' >
+                            <button type="button" class="btn btn-secondary btn-sm" id="ic_preenchimento_automatico" name="ic_preenchimento_automatico">Preencher Automático o grid de Escala ?</button>
+                        </div>
+                    </div>
+                    <h6>Quadro de escala</h6>
+                    <hr style='height:1px; border:none; color:#14074F; background-color:#14074F; margin-top: 0px; margin-bottom: 0px;'>
+                    <div class='row'>
+                        <div class='col-md-12'>
+                            <table class="table table-striped table-bordered nowrap" style="width:100%" id='tblAgendaTurno'>
+                                <thead>
+                                <tr style=" font-size: 14px " >
+                                    <th>#</th>
+                                    <th>Domingo</th>
+                                    <th>Segunda</th>
+                                    <th>Terça</th>
+                                    <th>Quarta</th>
+                                    <th>Quinta</th>
+                                    <th>Sexta</th>
+                                    <th>Sabado</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr style=" background: #BFEFFF; font-size: 14px ">
+                                    <td><b>Folga</b></td>
+                                    <td>
+                                        <input type='checkbox' name='ic_dom_folga' id='ic_dom_folga' />
+                                    </td>
+                                    <td>
+                                        <input type='checkbox' name='ic_seg_folga' id='ic_seg_folga' />
+                                    </td>
+                                    <td>
+                                        <input type='checkbox' name='ic_ter_folga' id='ic_ter_folga' />
+                                    </td>
+                                    <td>
+                                        <input type='checkbox' name='ic_qua_folga' id='ic_qua_folga' />
+                                    </td>
+                                    <td>
+                                        <input type='checkbox' name='ic_qui_folga' id='ic_qui_folga' />
+                                    </td>
+                                    <td>
+                                        <input type='checkbox' name='ic_sex_folga' id='ic_sex_folga' />
+                                    </td>
+                                    <td>
+                                        <input type='checkbox' name='ic_sab_folga' id='ic_sab_folga' />
+                                    </td>
+                                </tr>
+                                <tr style=" background: #EEEEEE; font-size: 14px ">
+                                    <td><b>Escala</b></td>
+                                    <td>
+                                        <input type='checkbox' name='ic_dom' id='ic_dom' />
+                                    </td>
+                                    <td>
+                                        <input type='checkbox' name='ic_seg' id='ic_seg' />
+                                    </td>
+                                    <td>
+                                        <input type='checkbox' name='ic_ter' id='ic_ter' />
+                                    </td>
+                                    <td>
+                                        <input type='checkbox' name='ic_qua' id='ic_qua' />
+                                    </td>
+                                    <td  >
+                                        <input type='checkbox' name='ic_qui' id='ic_qui' />
+                                    </td>
+                                    <td>
+                                        <input type='checkbox' name='ic_sex' id='ic_sex' />
+                                    </td>
+                                    <td>
+                                        <input type='checkbox' name='ic_sab' id='ic_sab' />
+                                    </td>
+                                </tr>
+                                <tr style=" background: #FFFFFF; font-size: 14px ">
+                                    <td>Turno</td>
+                                    <td>
+                                        <select class='form-control form-control-sm'  id='dom_turnos_pk' name='dom_turnos_pk'>
+                                            <option></option>
+                                            <option value="4">Dia Inteiro</option>
+                                            <option value="1">Manhã</option>
+                                            <option value="2">Tarde</option>
+                                            <option value="3">Noite</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select class='form-control form-control-sm'  id='seg_turnos_pk' name='seg_turnos_pk'>
+                                            <option></option>
+                                            <option value="4">Dia Inteiro</option>
+                                            <option value="1">Manhã</option>
+                                            <option value="2">Tarde</option>
+                                            <option value="3">Noite</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select class='form-control form-control-sm'  id='ter_turnos_pk' name='ter_turnos_pk'>
+                                            <option></option>
+                                            <option value="4">Dia Inteiro</option>
+                                            <option value="1">Manhã</option>
+                                            <option value="2">Tarde</option>
+                                            <option value="3">Noite</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select class='form-control form-control-sm'  id='qua_turnos_pk' name='qua_turnos_pk'>
+                                            <option></option>
+                                            <option value="4">Dia Inteiro</option>
+                                            <option value="1">Manhã</option>
+                                            <option value="2">Tarde</option>
+                                            <option value="3">Noite</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select class='form-control form-control-sm'  id='qui_turnos_pk' name='qui_turnos_pk'>
+                                            <option></option>
+                                            <option value="4">Dia Inteiro</option>
+                                            <option value="1">Manhã</option>
+                                            <option value="2">Tarde</option>
+                                            <option value="3">Noite</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select class='form-control form-control-sm'  id='sex_turnos_pk' name='sex_turnos_pk'>
+                                            <option></option>
+                                            <option value="4">Dia Inteiro</option>
+                                            <option value="1">Manhã</option>
+                                            <option value="2">Tarde</option>
+                                            <option value="3">Noite</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select class='form-control form-control-sm'  id='sab_turnos_pk' name='sab_turnos_pk'>
+                                            <option></option>
+                                            <option value="4">Dia Inteiro</option>
+                                            <option value="1">Manhã</option>
+                                            <option value="2">Tarde</option>
+                                            <option value="3">Noite</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                </tbody>
+                                <tfoot>
+                                <tr style="font-size: 14px ">
+                                    <td>HR Entrada Expediente</td>
+                                    <td>
+                                        <input  class='form-control form-control-sm mask_hour' maxlength="5" type='text'  name='hr_turno_dom' id='hr_turno_dom' />
+                                    </td>
+                                    <td>
+                                        <input   class='form-control form-control-sm mask_hour' maxlength="5" type='type' name='hr_turno_seg' id='hr_turno_seg' />
+                                    </td>
+                                    <td>
+                                        <input  class='form-control form-control-sm mask_hour' maxlength="5" type='type' name='hr_turno_ter' id='hr_turno_ter' />
+                                    </td>
+                                    <td>
+                                        <input  class='form-control form-control-sm mask_hour' maxlength="5" type='type' name='hr_turno_qua' id='hr_turno_qua' />
+                                    </td>
+                                    <td>
+                                        <input  class='form-control form-control-sm mask_hour' maxlength="5" type='type' name='hr_turno_qui' id='hr_turno_qui' />
+                                    </td>
+                                    <td>
+                                        <input  class='form-control form-control-sm mask_hour' maxlength="5" type='type' name='hr_turno_sex' id='hr_turno_sex' />
+                                    </td>
+                                    <td>
+                                        <input  class='form-control form-control-sm mask_hour' maxlength="5" type='type' name='hr_turno_sab' id='hr_turno_sab' />
+                                    </td>
+                                </tr>
+                                <tr style="font-size: 14px ">
+                                    <td>HR Saida Intervalo</td>
+                                    <td>
+                                        <input  class='form-control form-control-sm mask_hour' maxlength="5" type='type' name='hr_intervalo_dom' id='hr_intervalo_dom' />
+                                    </td>
+                                    <td>
+                                        <input  class='form-control form-control-sm mask_hour' maxlength="5" type='type' name='hr_intervalo_seg' id='hr_intervalo_seg' />
+                                    </td>
+                                    <td>
+                                        <input   class='form-control form-control-sm mask_hour' maxlength="5" type='type' name='hr_intervalo_ter' id='hr_intervalo_ter' />
+                                    </td>
+                                    <td>
+                                        <input  class='form-control form-control-sm mask_hour' maxlength="5" type='type' name='hr_intervalo_qua' id='hr_intervalo_qua' />
+                                    </td>
+                                    <td>
+                                        <input  class='form-control form-control-sm mask_hour' maxlength="5" type='type' name='hr_intervalo_qui' id='hr_intervalo_qui' />
+                                    </td>
+                                    <td>
+                                        <input  class='form-control form-control-sm mask_hour' maxlength="5" type='type' name='hr_intervalo_sex' id='hr_intervalo_sex' />
+                                    </td>
+                                    <td>
+                                        <input  class='form-control form-control-sm mask_hour' maxlength="5" type='type' name='hr_intervalo_sab' id='hr_intervalo_sab' />
+                                    </td>
+                                </tr>
+                                <tr style="font-size: 14px ">
+                                    <td>HR Retorno Intervalo</td>
+                                    <td>
+                                        <input  class='form-control form-control-sm mask_hour' maxlength="5" type='type' name='hr_intervalo_saida_dom' id='hr_intervalo_saida_dom' />
+                                    </td>
+                                    <td>
+                                        <input  class='form-control form-control-sm mask_hour' maxlength="5" type='type' name='hr_intervalo_saida_seg' id='hr_intervalo_saida_seg' />
+                                    </td>
+                                    <td>
+                                        <input   class='form-control form-control-sm mask_hour' maxlength="5" type='type' name='hr_intervalo_saida_ter' id='hr_intervalo_saida_ter' />
+                                    </td>
+                                    <td>
+                                        <input  class='form-control form-control-sm mask_hour' maxlength="5" type='type' name='hr_intervalo_saida_qua' id='hr_intervalo_saida_qua' />
+                                    </td>
+                                    <td>
+                                        <input  class='form-control form-control-sm mask_hour' maxlength="5" type='type' name='hr_intervalo_saida_qui' id='hr_intervalo_saida_qui' />
+                                    </td>
+                                    <td>
+                                        <input  class='form-control form-control-sm mask_hour' maxlength="5" type='type' name='hr_intervalo_saida_sex' id='hr_intervalo_saida_sex' />
+                                    </td>
+                                    <td>
+                                        <input  class='form-control form-control-sm mask_hour' maxlength="5" type='type' name='hr_intervalo_saida_sab' id='hr_intervalo_saida_sab' />
+                                    </td>
+                                </tr>
+                                <tr style="font-size: 14px ">
+                                    <td>HR Saida Expediente</td>
+                                    <td>
+                                        <input  class='form-control form-control-sm mask_hour' maxlength="5" type='type' name='hr_turno_dom_saida' id='hr_turno_dom_saida' />
+                                    </td>
+                                    <td>
+                                        <input   class='form-control form-control-sm mask_hour' maxlength="5" type='type' name='hr_turno_seg_saida' id='hr_turno_seg_saida' />
+                                    </td>
+                                    <td>
+                                        <input  class='form-control form-control-sm mask_hour' maxlength="5" type='type' name='hr_turno_ter_saida' id='hr_turno_ter_saida' />
+                                    </td>
+                                    <td>
+                                        <input  class='form-control form-control-sm mask_hour' maxlength="5" type='type' name='hr_turno_qua_saida' id='hr_turno_qua_saida' />
+                                    </td>
+                                    <td>
+                                        <input  class='form-control form-control-sm mask_hour' maxlength="5" type='type' name='hr_turno_qui_saida' id='hr_turno_qui_saida' />
+                                    </td>
+                                    <td>
+                                        <input  class='form-control form-control-sm mask_hour' maxlength="5" type='type' name='hr_turno_sex_saida' id='hr_turno_sex_saida' />
+                                    </td>
+                                    <td>
+                                        <input  class='form-control form-control-sm mask_hour' maxlength="5" type='type' name='hr_turno_sab_saida' id='hr_turno_sab_saida' />
+                                    </td>
+                                </tr >
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class='col-md-6'>
+                            <label for='cargos_pk'>Observação: </label>
+                            <textarea class='form-control form-control-sm'  id='obs' name='obs' /></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal" onclick="fecharModalEscala()">Fechar</button>
+                        <button type="button" class="btn btn-primary btn-sm" id="cmdEnviarEscala"  name="cmdEnviarEscala">Salvar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-------------------------DOCUMENTOS------------------------------->
+    <div class="modal fade bd-example-modal-lg" id="janela_documentos" >
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h6 style= "color:#FF5403"  >Lead - Documento</h6>
+                    <div align="right">
+                        <button type="button" class="btn btn-secondary btn-sm" id="cmdCancelarDocumento" data-dismiss="modal">Fechar</button>
+                        <button type="button" class="btn btn-primary btn-sm" id="cmdEnviarDocumento"  name="cmdEnviarDocumento">Salvar</button>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class='col-md-2'>
+                            &nbsp;
+                        </div>
+                        <div class="row" >
+                            <input type="hidden" name="ds_documento" id="ds_documento"/>
+                            <input type="hidden" name="ds_nome_original" id="ds_nome_original"/>
+
+                            <div class='col-md-12'>
+                            <span class="btn btn-success fileinput-button">
+                                <i class="glyphicon glyphicon-plus"></i>
+                                <span>Incluir Documento</span>
+
+                                <input id="fileupload"  type="file" name="FilesPic" multiple >
+                            </span>
+                                <br>
+                                <div id="alert_documento" style="display:none" >
+                                    <strong style="color: red">Selecione um arquivo</strong>
+                                </div>
+                                <br>
+                                <div id="files" class="files"></div>
+                                <!---->
+                                <div class="row" id="rowFotos"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row">
+                        <div class="col-md-2">
+                            &nbsp;
+                        </div>
+                        <div class="col-md-8">
+                            <table class="table table-striped table-bordered nowrap" style="width:100%" id="tblArquivos">
+                                <thead>
+                                <tr>
+                                    <th>Código</th>
+                                    <th>Documento</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <br>
+                    <br>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

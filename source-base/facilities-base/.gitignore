@@ -1,0 +1,10 @@
+.DS_Store
+*.bak
+*.log
+*.pid
+
+app/vendor/
+app/node_modules/
+
+logs/*
+!logs/.gitkeep

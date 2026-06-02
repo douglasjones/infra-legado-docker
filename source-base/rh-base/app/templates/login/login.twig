@@ -1,0 +1,48 @@
+{% extends "theme/base.login.twig" %}
+{% set area = 'oauth' %}
+
+{% block title %}
+    Autenticação
+{% endblock %}
+
+{% block head %}
+    {{ parent() }}
+{% endblock %}
+
+{% block CSSfiles %}
+    {{ parent() }}
+    <link rel="stylesheet" href="/assets/css/local/authentication.css?v={{ config.VERSION_ID }}">
+{% endblock %}
+
+{% block JSfiles %}
+    {{ parent() }}
+    <script src="/assets/js/global/oauth.js?v={{ config.VERSION_ID }}"></script>
+{% endblock %}
+
+{% block content %}
+    <div style="max-width: 800px;max-height: 100px;margin: 25vh auto;text-align: center">
+        <div style="background: #ffffff; padding: 10px 30px 10px;border-radius: 0px;box-shadow: 0 0 1.8rem rgba(0, 0, 0, 0.25);z-index: -1;text-align: center">
+            <div class="row">
+                <div class="col-lg-4" >
+                </div>
+                <div class="col-lg-6" style="height:auto; width:18rem; margin-top:2em; align: center;">
+                    <img class="avatar-img" width="120px" src="https://server.gpros.com.br/comercial/logos/logoOficial.png">
+                </div>
+            </div>
+            <div class="row" style="text-align: center">
+                <div class="col-lg-1" >
+                </div>
+                <div class="col-lg-4" style="height:auto; width:19rem; margin-top:3em; align: center;" >
+                    <!--REGISTRO DE PONTO--->
+                    <a href="/area_colaborador/receptivo"><button style="width: 250px;border-radius:25px;color:#ff9a66;background-color:#14074f" class="btn"  >Acessar Ponto</button></a><br><br>
+                    <img class="avatar-img" src="assets/img/acesso-sistema.png" style="width:250px">
+                </div>
+                <div class="col-lg-4" style="height:auto; width:19rem; margin-top:3em; align: center;" >
+                    <!--ACESSAR SISTEMA--->
+                    <a href="/loginSistema"><button style="width: 250px;border-radius:25px;background-color:#ff9a66;color: #14074f" class="btn"  >Acessar Sistema</button></a><br><br>
+                    <img class="avatar-img" src="assets/img/acesso-ponto.png" style="width:250px;text-align: center">
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

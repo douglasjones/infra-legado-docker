@@ -1,0 +1,36 @@
+<div class="dropdown profile-dropdown">
+    <a href="#" class="avatar avatar-sm avatar-circle ms-4 ms-xxl-5" data-bs-toggle="dropdown" aria-expanded="false"
+       id="dropdownMenuButton">
+        <img class="avatar-img" src="/assets/img/profile/avatar.jpg" alt="session['session_user']['NOME']">
+    </a>
+
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+        <li class="pt-2 px-4">
+            <span class="fs-16 font-weight-bold text-black-600 Montserrat-font me-2">
+                {{ session['session_user']['par2'] }} -
+                    <a href="#" style="color:red" class="fa fa-power-off" onclick="logout()"><span class="ms-2"></span></a>
+            </span>
+
+            <hr>
+            <small class="text-gray-600 pb-0 d-block">
+                <b alt="Perfil" title="Perfil">Empresa:</b> {{ session['session_user']['ds_conta'] }}
+            </small>
+            <br>
+            <small class="text-gray-600 pb-0 d-block">
+                <b alt="Perfil" title="Perfil">Perfil:</b> {{ session['session_user']['par8'] }}
+            </small>
+            <br>
+            <small class="text-gray-600 pb-2 d-block"><b>E-mail:</b> {{ session['session_user']['par9'] }}</small>
+            <hr>
+        </li>
+        <li>
+            <a class="dropdown-item" href="/usuarios/edit/{{ session['session_user']['par1'] }}">
+                <i class="fal fa-user-alt"></i>
+                <span class="ms-2">Meu perfil</span>
+            </a>
+        </li>
+        <li>
+
+        </li>
+    </ul>
+</div>
