@@ -1,5 +1,67 @@
 # Changelog - Brasil Servis
 
+## [2026-06-02] - Correcao do Reloginho em Turno Noturno
+
+### Contexto
+Foi solicitado revisar o comportamento do modulo `reloginho / acompanhamento de ponto` para turno noturno.
+
+Cenario reportado:
+- o expediente inicia em um dia, por exemplo `10/05/2026`
+- intervalo, retorno e termino acontecem na madrugada de `11/05/2026`
+- todas essas batidas devem permanecer na linha do dia `10/05/2026`
+
+O problema observado no `Brasil Servis` era o mesmo ja tratado no `America Servis`:
+- parte do fluxo ainda classificava os pontos pela data civil de `dt_hora_ponto`
+- isso fazia as batidas da madrugada aparecerem na linha do dia seguinte
+
+### Regra funcional consolidada
+
+- em turno noturno, a linha do reloginho deve ser ancorada na `dt_escala`
+- se o expediente cruza meia-noite, todas as batidas do ciclo devem permanecer vinculadas ao dia de inicio
+- a madrugada nao deve ser reclassificada pelo dia civil do timestamp
+
+### Alteracoes de backend
+
+#### Model `PontoFolha`
+- arquivo:
+  - `app/app/src/models/PontoFolha.php`
+- ajustes realizados:
+  - criacao de janela operacional de turno noturno baseada nos horarios reais da escala
+  - tratamento do turno noturno pela data operacional da escala
+  - uso de consulta propria de fechamento noturno para manter entrada, intervalo e saida na mesma linha do inicio do expediente
+  - preservacao do filtro por `agenda_colaborador_padrao_pk` quando informado
+  - protecao para `ds_lead` quando nao houver ponto retornado
+
+#### Model `Ponto`
+- arquivo:
+  - `app/app/src/models/Ponto.php`
+- ajustes realizados:
+  - alinhamento do historico do reloginho com a mesma regra operacional do turno noturno
+  - restauracao da consulta normal diurna por dia civil completo
+  - consulta noturna passando a usar janela operacional da escala, em vez de faixas fixas simplificadas
+  - suporte ao filtro por `agenda_colaborador_padrao_pk` tambem no fluxo noturno
+
+### Base de referencia usada
+
+- cliente de referencia:
+  - `america-servis`
+- criterio adotado:
+  - portar a logica estrutural do tratamento noturno
+  - sem sobrescrever ajustes especificos ja existentes do `Brasil Servis`, especialmente os de `escala alternada`
+
+### Validacoes executadas
+
+- `php -l app/app/src/models/PontoFolha.php`
+- `php -l app/app/src/models/Ponto.php`
+
+### Validacao funcional recomendada
+
+- testar colaborador com turno noturno iniciando em um dia e terminando no outro
+- exemplo esperado:
+  - entrada no dia `10`
+  - intervalo, retorno e saida na madrugada do dia `11`
+  - todos os registros devem aparecer na linha do dia `10`
+
 ## [2026-05-27] - Escala Alternada, Edicao de Escala e Ajustes de Integracao
 
 ### Contexto

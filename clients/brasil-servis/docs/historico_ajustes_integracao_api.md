@@ -219,6 +219,66 @@ Risco:
 
 ### Ajuste aplicado
 
+## 8. Reloginho em turno noturno ancorado pela data da escala
+
+Data: 2026-06-02
+
+### Problema encontrado
+
+No modulo `reloginho / acompanhamento de ponto`, colaboradores com turno noturno ainda podiam ter os registros quebrados entre dois dias civis.
+
+Cenario reportado:
+- inicio do expediente no dia `10`
+- intervalo, retorno e termino na madrugada do dia `11`
+- comportamento incorreto:
+  - parte das batidas aparecia na linha do dia `11`
+- comportamento esperado:
+  - todas as batidas do turno devem permanecer na linha do dia `10`
+
+### Causa identificada
+
+O backend do `Brasil Servis` ainda tinha trechos que:
+- consultavam ponto noturno usando janelas fixas simplificadas
+- ou voltavam a priorizar a consulta normal por `DATE(dt_hora_ponto)` mesmo quando a jornada cruzava meia-noite
+
+Isso fazia o sistema misturar:
+- `dia civil do timestamp`
+- `dia operacional da escala`
+
+### Base de comparacao
+
+Foi usada como referencia a correcao aplicada no cliente:
+- `america-servis`
+
+O mesmo problema funcional ja havia sido tratado la:
+- turno noturno deve ser sempre agrupado pela `dt_escala`
+- a madrugada deve permanecer vinculada ao dia de inicio do expediente
+
+### Ajuste aplicado
+
+No `Brasil Servis`, a correcao foi adaptada sem sobrescrever as customizacoes locais de escala:
+
+- `clients/brasil-servis/app/app/src/models/PontoFolha.php`
+  - criada janela operacional noturna com base nos horarios reais da escala
+  - criado fluxo proprio para fechamento da linha do dia em turno noturno
+  - impedido que a consulta normal do dia civil reassuma o controle quando o expediente cruza meia-noite
+
+- `clients/brasil-servis/app/app/src/models/Ponto.php`
+  - historico do reloginho alinhado com a mesma regra de turno noturno
+  - consulta noturna passou a usar a janela operacional da escala
+  - consulta diurna voltou a considerar o dia civil completo apenas para turno normal
+
+### Resultado esperado apos o ajuste
+
+- se o expediente iniciar em `10/05/2026`
+- e terminar na madrugada de `11/05/2026`
+- entrada, intervalo, retorno e saida devem aparecer todos na linha de `10/05/2026`
+
+### Validacoes executadas
+
+- `php -l clients/brasil-servis/app/app/src/models/PontoFolha.php`
+- `php -l clients/brasil-servis/app/app/src/models/Ponto.php`
+
 Foi criado um helper central no model `Ponto` para:
 - reduzir a largura maxima para `1280px`
 - manter proporcao

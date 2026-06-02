@@ -14,6 +14,8 @@ class Ponto {
     public $pdo;
     private $maxPointImageWidth = 1280;
     private $pointImageJpegQuality = 75;
+    private $margemInicioTurnoNoturnoSegundos = 14400;
+    private $margemFimTurnoNoturnoSegundos = 21600;
 
     public function __construct($pdo) {
         $this->pdo = $pdo;
@@ -175,6 +177,44 @@ class Ponto {
         }
 
         return $segundos;
+    }
+
+    private function normalizarHorarioEscala($horario, $fallback = "")
+    {
+        $horario = trim((string)$horario);
+        if ($horario === "") {
+            return $fallback;
+        }
+
+        return strlen($horario) === 5 ? $horario . ':00' : $horario;
+    }
+
+    private function montarJanelaOperacionalNoturna($dt_escala, $colaborador_pk, $agenda_colaborador_padrao_pk = "")
+    {
+        $escala = (new PontoFolha($this->pdo))->pegarHorarioDeEntradaPorDataDiaSemana($colaborador_pk, $dt_escala, $agenda_colaborador_padrao_pk);
+        $hr_inicio_expediente = $this->normalizarHorarioEscala($escala['dados']['hr_inicio_expediente'] ?? "", '16:00:00');
+        $hr_termino_expediente = $this->normalizarHorarioEscala($escala['dados']['hr_termino_expediente'] ?? "", '10:00:00');
+
+        $cruzaMeiaNoite = $hr_inicio_expediente !== "" &&
+            $hr_termino_expediente !== "" &&
+            strtotime($hr_inicio_expediente) > strtotime($hr_termino_expediente);
+
+        $dt_fim_operacional = $cruzaMeiaNoite
+            ? date('Y-m-d', strtotime($dt_escala . ' +1 day'))
+            : $dt_escala;
+
+        $dt_inicio_operacional = $dt_escala . ' ' . $hr_inicio_expediente;
+        $dt_fim_operacional_com_hora = $dt_fim_operacional . ' ' . $hr_termino_expediente;
+
+        if ($cruzaMeiaNoite) {
+            $dt_inicio_operacional = date('Y-m-d H:i:s', strtotime($dt_inicio_operacional) - $this->margemInicioTurnoNoturnoSegundos);
+            $dt_fim_operacional_com_hora = date('Y-m-d H:i:s', strtotime($dt_fim_operacional_com_hora) + $this->margemFimTurnoNoturnoSegundos);
+        }
+
+        return [
+            'inicio' => $dt_inicio_operacional,
+            'fim' => $dt_fim_operacional_com_hora,
+        ];
     }
 
     public function verificarPontoAgenda($colaborador_pk, $dt_escala) {
@@ -1201,15 +1241,10 @@ class Ponto {
             $turnos_pk = (new PontoFolha($this->pdo))->listarTurnosPk($agenda_colaborador_padrao_pk);
             $query =[];
 
-            $arrNoturno = $this->pegarPontoNoturno($dt_ini,$dt_fim,$colaborador_pk,$leads_pk);
-            $arrNormal = $this->pegarPontoNormal($dt_ini,$dt_fim,$colaborador_pk,$leads_pk);
-            $query =[];
-            // Prioriza pontos normais (diurno)
-            if (!empty($arrNoturno)) {
-                $query = $arrNoturno;
-            }
-            else if (!empty($arrNormal)) {
-                $query = $arrNormal;
+            if ($turnos_pk == 3) {
+                $query = $this->pegarPontoNoturno($dt_ini,$dt_fim,$colaborador_pk,$leads_pk,$agenda_colaborador_padrao_pk);
+            } else {
+                $query = $this->pegarPontoNormal($dt_ini,$dt_fim,$colaborador_pk,$leads_pk);
             }
             if(count($query) > 0){
                 for($i=0;$i < count($query);$i++){
@@ -2018,11 +2053,7 @@ class Ponto {
         $sql.="       left join ponto_solicitacao_liberacao_app psl on col.pk = psl.colaborador_pk";
         $sql .= " 
             WHERE (
-                -- Entrada: dentro do turno diurno
-                (pt.dt_hora_ponto BETWEEN '".$dt_escala." 04:00:00' AND '".$dt_escala." 22:00:00' AND pt.tipo_ponto_pk = 1)
-                OR
-                -- Saída: também dentro do turno diurno
-                (pt.dt_hora_ponto BETWEEN '".$dt_escala." 04:00:00' AND '".$dt_escala." 22:00:00' AND pt.tipo_ponto_pk != 1)
+                (pt.dt_hora_ponto BETWEEN '".$dt_escala." 00:00:00' AND '".$dt_escala." 23:59:59')
             )
         ";
 
@@ -2052,14 +2083,10 @@ class Ponto {
 
         return $query; 
     }
-    public function pegarPontoNoturno($dt_ini,$dt_fim,$colaborador_pk,$leads_pk){
+    public function pegarPontoNoturno($dt_ini,$dt_fim,$colaborador_pk,$leads_pk,$agenda_colaborador_padrao_pk = ""){
 
         $dt_escala = Util::DataYMD($dt_ini);
-        $dt_escala_obj = new DateTime($dt_escala);
-        $dt_escala_obj->modify('+1 day'); // Subtrai 1 dia
-        
-        // Formata a data no formato desejado
-        $dt_escala_modified = $dt_escala_obj->format('Y-m-d');
+        $janela = $this->montarJanelaOperacionalNoturna($dt_escala, $colaborador_pk, $agenda_colaborador_padrao_pk);
 
         $sql ="";
         $sql.="SELECT l.pk,";
@@ -2139,11 +2166,7 @@ class Ponto {
         $sql.=" where 1=1 ";
 
         $sql.=' AND (
-            -- Entrada: do início do turno até o final do dia
-            (pt.dt_hora_ponto BETWEEN "'.$dt_escala.' 20:00:00" AND "'.$dt_escala_modified.' 00:00:00" AND pt.tipo_ponto_pk = 1)
-            -- Saída: do início do dia seguinte até o fim do turno
-            OR
-            (pt.dt_hora_ponto BETWEEN "'.$dt_escala_modified.' 00:00:00" AND "'.$dt_escala_modified.' 07:00:00" AND pt.tipo_ponto_pk != 1)
+            (pt.dt_hora_ponto BETWEEN "'.$janela['inicio'].'" AND "'.$janela['fim'].'")
         )';
         if($leads_pk != ""){
             $sql.=" and (l.pk = ".$leads_pk." OR ll.pk= ".$leads_pk.")";
@@ -2151,6 +2174,9 @@ class Ponto {
 
         if($colaborador_pk != ""){
             $sql.=" and pt.colaborador_pk  = ".$colaborador_pk;
+        }
+        if($agenda_colaborador_padrao_pk != ""){
+            $sql.=" and agp.pk = ".$agenda_colaborador_padrao_pk;
         }
         $sql.=" group by pt.tipo_ponto_pk ";
         $sql.=" order by pt.dt_hora_ponto asc ";

@@ -10,6 +10,8 @@ use Throwable;
 class PontoFolha {
 
     public $pdo;
+    private $margemInicioTurnoNoturnoSegundos = 14400;
+    private $margemFimTurnoNoturnoSegundos = 21600;
 
     public function __construct($pdo) {
         $this->pdo = $pdo;
@@ -3117,6 +3119,111 @@ class PontoFolha {
 
 
 
+    private function horarioCruzaMeiaNoite($hr_inicio_expediente, $hr_termino_expediente)
+    {
+        $hr_inicio_expediente = trim((string)$hr_inicio_expediente);
+        $hr_termino_expediente = trim((string)$hr_termino_expediente);
+
+        if ($hr_inicio_expediente === "" || $hr_termino_expediente === "") {
+            return false;
+        }
+
+        return strtotime($hr_inicio_expediente) > strtotime($hr_termino_expediente);
+    }
+
+    private function normalizarHorarioEscala($horario, $fallback = "")
+    {
+        $horario = trim((string)$horario);
+        if ($horario === "") {
+            return $fallback;
+        }
+
+        return strlen($horario) === 5 ? $horario . ':00' : $horario;
+    }
+
+    private function montarJanelaOperacionalEscala($dt_escala, $colaboradores_pk, $agenda_colaborador_padrao_pk = "", $fallbackInicio = '16:00:00', $fallbackFim = '10:00:00')
+    {
+        $escala = $this->pegarHorarioDeEntradaPorDataDiaSemana($colaboradores_pk, $dt_escala, $agenda_colaborador_padrao_pk);
+        $hr_inicio_expediente = $this->normalizarHorarioEscala($escala['dados']['hr_inicio_expediente'] ?? "", $fallbackInicio);
+        $hr_termino_expediente = $this->normalizarHorarioEscala($escala['dados']['hr_termino_expediente'] ?? "", $fallbackFim);
+
+        $cruzaMeiaNoite = $hr_inicio_expediente !== "" &&
+            $hr_termino_expediente !== "" &&
+            strtotime($hr_inicio_expediente) > strtotime($hr_termino_expediente);
+
+        $dt_fim_operacional = $cruzaMeiaNoite
+            ? date('Y-m-d', strtotime($dt_escala . ' +1 day'))
+            : $dt_escala;
+
+        $dt_inicio_operacional = $dt_escala . ' ' . $hr_inicio_expediente;
+        $dt_fim_operacional_com_hora = $dt_fim_operacional . ' ' . $hr_termino_expediente;
+
+        if ($cruzaMeiaNoite) {
+            $dt_inicio_operacional = date('Y-m-d H:i:s', strtotime($dt_inicio_operacional) - $this->margemInicioTurnoNoturnoSegundos);
+            $dt_fim_operacional_com_hora = date('Y-m-d H:i:s', strtotime($dt_fim_operacional_com_hora) + $this->margemFimTurnoNoturnoSegundos);
+        }
+
+        return [
+            'inicio' => $dt_inicio_operacional,
+            'fim' => $dt_fim_operacional_com_hora,
+            'cruza_meia_noite' => $cruzaMeiaNoite,
+        ];
+    }
+
+    private function buscarUltimosPontosPorJanela($colaboradores_pk, $dt_inicio, $dt_fim, $agenda_colaborador_padrao_pk = "")
+    {
+        $sql = '
+            SELECT
+                p.pk,
+                p.tipo_ponto_pk,
+                p.ic_validacao_facial,
+                l.ds_lead,
+                p.dt_validacao_facial,
+                p.usuario_validacao_facial,
+                acp.turnos_pk,
+                DATE_FORMAT(p.dt_hora_ponto, "%H:%i") AS hora_ponto,
+                DATE_FORMAT(p.dt_hora_ponto, "%d-%m-%Y") AS dt_ponto,
+                DATE_FORMAT(p.dt_hora_ponto, "%Y-%m-%d") AS dt_compared
+            FROM ponto p
+            INNER JOIN (
+                SELECT tipo_ponto_pk, MAX(dt_hora_ponto) AS max_dt
+                FROM ponto
+                WHERE colaborador_pk = :colaborador_pk
+                  AND dt_hora_ponto BETWEEN :dt_inicio AND :dt_fim
+                GROUP BY tipo_ponto_pk
+            ) ultimos
+                ON p.tipo_ponto_pk = ultimos.tipo_ponto_pk
+               AND p.dt_hora_ponto = ultimos.max_dt
+            INNER JOIN colaboradores c ON p.colaborador_pk = c.pk
+            INNER JOIN agenda_colaborador_padrao acp ON p.colaborador_pk = acp.colaboradores_pk
+            LEFT JOIN produtos_servicos ps ON acp.produtos_servicos_pk = ps.pk
+            INNER JOIN leads l ON p.leads_pk = l.pk
+            LEFT JOIN turnos t ON acp.turnos_pk = t.pk
+            WHERE p.colaborador_pk = :colaborador_pk
+              AND p.dt_hora_ponto BETWEEN :dt_inicio AND :dt_fim
+        ';
+
+        if ($agenda_colaborador_padrao_pk != "") {
+            $sql .= ' AND acp.pk = :agenda_colaborador_padrao_pk ';
+        }
+
+        $sql .= '
+            GROUP BY p.tipo_ponto_pk
+            ORDER BY p.dt_hora_ponto DESC
+        ';
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':colaborador_pk', $colaboradores_pk, \PDO::PARAM_INT);
+        $stmt->bindValue(':dt_inicio', $dt_inicio);
+        $stmt->bindValue(':dt_fim', $dt_fim);
+        if ($agenda_colaborador_padrao_pk != "") {
+            $stmt->bindValue(':agenda_colaborador_padrao_pk', $agenda_colaborador_padrao_pk, \PDO::PARAM_INT);
+        }
+        $stmt->execute();
+
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC) ?: [];
+    }
+
     public function listarConsultaPontoColaborador($leads_pk, $colaboradores_pk, $dt_periodo_ini,$dt_periodo_fim,$agenda_colaborador_padrao_pk){              
 
         $dadosEscala = $this->listarDadosEscala($dt_periodo_ini, $dt_periodo_fim, $colaboradores_pk, $agenda_colaborador_padrao_pk);
@@ -3226,31 +3333,27 @@ class PontoFolha {
                 strtotime($hr_inicio_expediente) > strtotime($hr_termino_expediente)
             );
 
-            $arrNoturno = $this->verificarPontoEscalaNoturna($dt_escala,$colaboradores_pk);
-            $arrNormal = $this->verificarPontoEscalaNormal($dt_escala,$colaboradores_pk);
+            $arrNoturno = $this->verificarPontoEscalaNoturna($dt_escala, $colaboradores_pk, $agenda_colaborador_padrao_pk);
+            $arrNormal = $this->verificarPontoEscalaNormal($dt_escala, $colaboradores_pk, $agenda_colaborador_padrao_pk);
             $query = [];
 
             if ($isTurnoNoturno) {
-                $temEntrada = false;
-                $temSaida = false;
-
-                foreach ($arrNormal as $registro) {
-                    if ($registro['tipo_ponto_pk'] == 1) {
-                        $temEntrada = true;
-                    }
-                    if ($registro['tipo_ponto_pk'] == 2) {
-                        $temSaida = true;
-                    }
-                }
+                $query = $this->verificarPontoEscalaNoturnaPorDiaFechamento($dt_escala, $colaboradores_pk, $agenda_colaborador_padrao_pk);
+            } elseif (!empty($arrNormal)) {
+                $tipos = array_column($arrNormal, 'tipo_ponto_pk');
+                $temEntrada = in_array(1, $tipos);
+                $temSaida = in_array(2, $tipos);
 
                 if ($temEntrada && $temSaida) {
+                    $query = $arrNormal;
+                } elseif ($temEntrada || $temSaida) {
+                    $query = $arrNormal;
+                } elseif (count($arrNormal) >= 1) {
                     $query = $arrNormal;
                 } else {
                     $query = $arrNoturno;
                 }
-            } else if (!empty($arrNormal)) {
-                $query = $arrNormal;
-            } else if (count($arrNoturno) > 3) {
+            } else {
                 $query = $arrNoturno;
             }
             
@@ -3541,7 +3644,7 @@ class PontoFolha {
                 "situacao" => $situacao,
                 "ic_apontamento" => $ic_apontamento,
                 "apontamento_pk" => $apontamento_pk,
-                "ds_lead" => $query[0]['ds_lead'],
+                "ds_lead" => isset($query[0]['ds_lead']) ? $query[0]['ds_lead'] : null,
                 "tipo_ponto_pk" => $tipo_ponto_pk
             );
 
@@ -3564,9 +3667,8 @@ class PontoFolha {
         return $arrDias;
     }
 
-    public function verificarPontoEscalaNormal($dt_escala, $colaboradores_pk)
+    public function verificarPontoEscalaNormal($dt_escala, $colaboradores_pk, $agenda_colaborador_padrao_pk = "")
     {
-        // Query de verificação dos pontos
         $sql = '
             SELECT 
                 p.pk,
@@ -3596,6 +3698,13 @@ class PontoFolha {
             LEFT JOIN turnos t ON acp.turnos_pk = t.pk
             WHERE p.colaborador_pk = :colaborador_pk
             AND DATE(p.dt_hora_ponto) = :dt_escala
+        ';
+
+        if($agenda_colaborador_padrao_pk != ""){
+            $sql .= " AND acp.pk = :agenda_colaborador_padrao_pk ";
+        }
+
+        $sql .= '
             GROUP BY p.tipo_ponto_pk
             ORDER BY p.dt_hora_ponto DESC
         ';
@@ -3603,98 +3712,72 @@ class PontoFolha {
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindValue(':colaborador_pk', $colaboradores_pk, \PDO::PARAM_INT);
         $stmt->bindValue(':dt_escala', $dt_escala);
+        if($agenda_colaborador_padrao_pk != ""){
+            $stmt->bindValue(':agenda_colaborador_padrao_pk', $agenda_colaborador_padrao_pk, \PDO::PARAM_INT);
+        }
         $stmt->execute();
 
-        $query = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-
-        // Retorna os pontos se houver; senão, retorna array vazio
-        return $query ?: [];
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC) ?: [];
     }
-    public function verificarPontoEscalaNoturna($dt_escala,$colaboradores_pk) {
-        //Query de verificação dos pontos
+    public function verificarPontoEscalaNoturna($dt_escala, $colaboradores_pk, $agenda_colaborador_padrao_pk = "")
+    {
+        $janela = $this->montarJanelaOperacionalEscala($dt_escala, $colaboradores_pk, $agenda_colaborador_padrao_pk);
 
-        $dt_escala_obj = new DateTime($dt_escala);
-        $dt_escala_obj->modify('+1 day'); // Subtrai 1 dia
-        
-        // Formata a data no formato desejado
-        $dt_escala_modified = $dt_escala_obj->format('Y-m-d');
+        return $this->buscarUltimosPontosPorJanela(
+            $colaboradores_pk,
+            $janela['inicio'],
+            $janela['fim'],
+            $agenda_colaborador_padrao_pk
+        );
+    }
 
-        $sql='';
-        $sql.='Select p.pk';
-        $sql.='      ,p.tipo_ponto_pk';
-        $sql.='      ,p.ic_validacao_facial';
-        $sql.='      ,l.ds_lead';
-        $sql.='      ,p.dt_validacao_facial';
-        $sql.='      ,p.usuario_validacao_facial';
-        $sql.="      ,acp.turnos_pk";
-        $sql.='      ,DATE_FORMAT(p.dt_hora_ponto, "%H:%i") hora_ponto'; 
-        $sql.='      ,DATE_FORMAT(p.dt_hora_ponto, "%d-%m-%Y") dt_ponto'; 
-        $sql.='      ,DATE_FORMAT(p.dt_hora_ponto, "%Y-%m-%d") dt_compared'; 
-        $sql.='  from ponto p';
-        $sql.="      inner join colaboradores c on p.colaborador_pk = c.pk";
-        $sql.="      inner join agenda_colaborador_padrao acp on p.colaborador_pk  = acp.colaboradores_pk ";
-        $sql.="      left join produtos_servicos ps on acp.produtos_servicos_pk = ps.pk ";
-        $sql.="      inner join leads l on p.leads_pk = l.pk ";
-        $sql.="      left join turnos t on acp.turnos_pk = t.pk ";
-        $sql.=' where p.colaborador_pk ='.$colaboradores_pk;
-        $sql.=' AND (
-            (p.dt_hora_ponto BETWEEN "'.$dt_escala.' 14:30:00" and  "'.$dt_escala_modified.' 02:00:00" AND p.tipo_ponto_pk = 1)
-            OR
-            (p.dt_hora_ponto BETWEEN "'.$dt_escala_modified.' 00:00:00" and  "'.$dt_escala_modified.' 10:30:00" AND p.tipo_ponto_pk != 1)
-        )';
-        $sql.=" group by p.tipo_ponto_pk";
-        $sql.=" order by p.dt_hora_ponto desc";
+    public function verificarPontoEscalaNoturnaPorDiaFechamento($dt_escala, $colaboradores_pk, $agenda_colaborador_padrao_pk = "")
+    {
+        $janela = $this->montarJanelaOperacionalEscala($dt_escala, $colaboradores_pk, $agenda_colaborador_padrao_pk);
 
-    
-        
-        
-     
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute();
-        $query = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-    
-        return $query;
+        return $this->buscarUltimosPontosPorJanela(
+            $colaboradores_pk,
+            $janela['inicio'],
+            $janela['fim'],
+            $agenda_colaborador_padrao_pk
+        );
     }
 
     public function listarDadosPonto($dt_escala,$colaboradores_pk,$agenda_colaborador_padrao_pk){
         $turnos_pk = $this->listarTurnosPk($agenda_colaborador_padrao_pk);
-        if($turnos_pk!=3){
-            $arrNoturno = $this->verificarPontoEscalaNoturna($dt_escala,$colaboradores_pk);
-            $arrNormal = $this->verificarPontoEscalaNormal($dt_escala,$colaboradores_pk);
-            $query =[];
-            if(count($arrNormal)>0){
+        $escala = $this->pegarHorarioDeEntradaPorDataDiaSemana($colaboradores_pk, $dt_escala, $agenda_colaborador_padrao_pk);
+        $hr_inicio_expediente = $escala['dados']['hr_inicio_expediente'] ?? "";
+        $hr_termino_expediente = $escala['dados']['hr_termino_expediente'] ?? "";
+
+        $arrNoturno = $this->verificarPontoEscalaNoturna($dt_escala, $colaboradores_pk, $agenda_colaborador_padrao_pk);
+        $arrNormal  = $this->verificarPontoEscalaNormal($dt_escala, $colaboradores_pk, $agenda_colaborador_padrao_pk);
+        $turnoDiaPk = isset($escala['dados']['turno_pk']) ? (int)$escala['dados']['turno_pk'] : (int)$turnos_pk;
+        $isTurnoNoturno = $turnoDiaPk === 3 || (
+            $hr_inicio_expediente != "" &&
+            $hr_termino_expediente != "" &&
+            strtotime($hr_inicio_expediente) > strtotime($hr_termino_expediente)
+        );
+
+        $query = [];
+
+        if ($isTurnoNoturno) {
+            $query = $this->verificarPontoEscalaNoturnaPorDiaFechamento($dt_escala, $colaboradores_pk, $agenda_colaborador_padrao_pk);
+        } elseif (!empty($arrNormal)) {
+            $tipos = array_column($arrNormal, 'tipo_ponto_pk');
+            $temEntrada = in_array(1, $tipos);
+            $temSaida   = in_array(2, $tipos);
+
+            if ($temEntrada && $temSaida) {
                 $query = $arrNormal;
-            }
-            else if(count($arrNoturno)>3){
+            } elseif ($temEntrada || $temSaida) {
+                $query = $arrNormal;
+            } elseif (count($arrNormal) >= 1) {
+                $query = $arrNormal;
+            } else {
                 $query = $arrNoturno;
-                
             }
-        }
-        else{
-            $arrNoturno = $this->verificarPontoEscalaNoturna($dt_escala,$colaboradores_pk);
-            $arrNormal = $this->verificarPontoEscalaNormal($dt_escala,$colaboradores_pk);
-            $query =[];
-            if (!empty($arrNormal)) {
-                $temEntrada = false;
-                $temSaida   = false;
-
-                foreach ($arrNormal as $registro) {
-                    if ($registro['tipo_ponto_pk'] == 1) {
-                        $temEntrada = true;
-                    }
-                    if ($registro['tipo_ponto_pk'] == 2) {
-                        $temSaida = true;
-                    }
-                }
-
-                // Só considera válido se tiver os dois
-                if ($temEntrada && $temSaida) {
-                    $query = $arrNormal;
-                }
-                else{
-                    $query = $arrNoturno;
-                }
-            }
+        } else {
+            $query = $arrNoturno;
         }
         
         $ponto_ini_expediente = "";
