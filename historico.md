@@ -837,6 +837,35 @@ Acesso:
 - `http://127.0.0.1:8086/login`
 - usuario validado: `admin`
 - senha validada: `@Gpres_25`
+
+### Migracao de banco RH Restaurante Tilapia
+
+Objetivo:
+- subir o dump do cliente `rh-restaurante-tilapia`
+- aplicar ao final as alteracoes de banco documentadas para reloginho/folha
+
+Ambiente:
+- cliente `clients/rh-restaurante-tilapia`
+- MySQL `rh-restaurante-tilapia-mysql`
+- banco `wwgepr_rest_tilapia`
+
+Problema identificado:
+- o dump em `clients/rh-restaurante-tilapia/database/wwgepr_rest_tilapia.sql.gz` estava corrompido
+- ao validar/leitura, o `gzip` retornou `unexpected end of file`
+
+Acao:
+- usada a copia integra em `clients/restaurante/database/wwgepr_rest_tilapia.sql.gz`
+- banco `wwgepr_rest_tilapia` recriado antes da carga
+- dump importado com sucesso no container do cliente
+- aplicada a compatibilidade final em `clients/rh-restaurante-tilapia/database/20260602_compat_campos_reloginho_folha.sql`
+
+Validacoes:
+- banco final com `40` tabelas
+- `16` campos de compatibilidade presentes no schema
+- tabela `validar_reloginho` continua ausente neste cliente, conforme ja documentado no levantamento local
+
+Documentacao complementar:
+- `clients/rh-restaurante-tilapia/docs/migracao_banco_2026-06-03.md`
 ## [2026-05-30 11:05] Publish - brasil-servis
 - Commit: cb06925 - fix: corrige write_array_to_file para set -e
 - Reason: Piloto Git Deploy Brasil Servis
@@ -854,4 +883,3 @@ Acesso:
 - Reason: fix: ajusta login e reloginho do america-servis
 - Container: america-php
 - Manifest: /Volumes/MACWORK/gpros-workspace/03-clients/active/facilities/migracao/infra-legado-docker/clients/america-servis/docs/releases/release-2026-05-31-16-16-33.txt
-
