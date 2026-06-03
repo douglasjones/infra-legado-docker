@@ -1,0 +1,32 @@
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="row">
+                <div class='col'>
+                    <h6 class="font-weight">Novo apontamento - <b>Abono de Horas</b></h6>
+                    <hr>
+                </div>
+                <div class="row" style="margin: 5px">
+                    
+                    <div class='col-md-3'>
+                        <label for='motivos_troca_escala_pk'>Hora Inicio:&nbsp;</label>
+                        <input type="text" onkeypress='mascara(this,horamask)' name="hr_ini_abono" id="hr_ini_abono" class="form-control form-control-sm">
+                    </div>
+                    <div class='col-md-3'>
+                        <label for='motivos_troca_escala_pk'>Hora Ini. Intervalo:&nbsp;</label>
+                        <input type="text" onkeypress='mascara(this,horamask)' name="hr_ini_intervalo_abono" id="hr_ini_intervalo_abono" class="form-control form-control-sm">
+                    </div>
+                    <div class='col-md-3'>
+                        <label for='motivos_troca_escala_pk'>Hora Term Intervalo:&nbsp;</label>
+                        <input type="text" onkeypress='mascara(this,horamask)' name="hr_termino_intervalo_abono" id="hr_termino_intervalo_abono" class="form-control form-control-sm">
+                    </div>
+                    <div class='col-md-3'>
+                        <label for='motivos_troca_escala_pk'>Hora termino:&nbsp;</label>
+                        <input type="text" onkeypress='mascara(this,horamask)' name="hr_termino_abono" id="hr_termino_abono" class="form-control form-control-sm">
+                    </div>
+                </div>
+                <br>
+            </div>
+        </div>
+    </div>
+{% endblock %}

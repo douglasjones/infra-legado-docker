@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  php73:
+    build:
+      context: ../../images/php73
+      dockerfile: Dockerfile
+    container_name: ${CLIENT_NAME}_php73
+    volumes:
+      - ./www:/var/www/html
+    ports:
+      - "${PHP_PORT}:80"
+    environment:
+      CLIENT_NAME: ${CLIENT_NAME}
+    networks:
+      - client_network
+
+networks:
+  client_network:
+    external: true
+    name: client_network

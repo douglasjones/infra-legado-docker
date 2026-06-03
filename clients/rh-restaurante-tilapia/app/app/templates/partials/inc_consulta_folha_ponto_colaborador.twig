@@ -1,0 +1,170 @@
+<script>
+    function fcImprimirRelogio() {
+        var printContents = document.getElementById("printableAreaRelogio").innerHTML;
+        
+        var printWindow = window.open('', '', 'height=800,width=600');
+        printWindow.document.write('<html><head><title>'+$("#colaborador_consulta_folha_pk option:selected").text()+' - '+$("#leads_consulta_folha_pk option:selected").text()+' - '+$("#ic_consulta_folha_mes option:selected").text()+' / '+$("#ic_consulta_folha_ano option:selected").text()+'</title>');
+        printWindow.document.write('<style>@page { size: A4; margin: 10mm; } #printableAreaRelogio { width: 100%; font-size: 12pt; overflow: hidden; } </style>');
+        printWindow.document.write('</head><body>');
+        printWindow.document.write(printContents);
+        printWindow.document.write('</body></html>');
+        printWindow.document.close();
+        printWindow.print();
+    }
+</script>
+<style>
+    /* Estilo para a impressão */
+    @media print {
+        .noprint {
+            display: none;
+        }
+        @page {
+            size: A4;
+            margin: 10mm;
+        }
+        #printableAreaRelogio {
+            width: 100%;
+            font-size: 12pt;
+            overflow: hidden;
+            page-break-inside: avoid;
+        }
+        #printableAreaRelogio img {
+            max-width: 100%;
+            height: auto;
+        }
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .col-md-4, .col-md-12 {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        .modal-header div {
+            display: none;
+        }
+    }
+
+    /* Ajuste o modal para ocupar toda a largura da tela */
+    .modal-fullscreen {
+        width: 100vw;
+        max-width: 100%;
+        margin: 0;
+    }
+    .modal-fullscreen .modal-dialog {
+        width: 100%;
+        max-width: none;
+        margin: 0;
+    }
+    .modal-fullscreen .modal-content {
+        width: 100%;
+        max-width: none;
+    }
+</style>
+
+
+
+<div >
+    <div class="modal fade modal-wide modal-fullscreen" tabindex="-1" role="dialog" aria-labelledby="meuModalLabel" aria-hidden="true" id="consulta_folha_ponto">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h6 style= "color:#FF5403"  >Acompanhamento de Ponto</h6>
+                    <div align="right">
+                        <button type="button" class="btn btn-secondary btn-sm" onclick="fcFecharConsultaFolhaPonto()" data-dismiss="modal">Fechar</button>
+                        <button type="button" class="btn btn-primary btn-sm" style="background-color:green" onclick="fcImprimirRelogio()">Gerar PDF</button>&nbsp;&nbsp;&nbsp;
+                    </div>
+                </div>
+                <div class="modal-body" >
+                    <div class='row'>
+                        <input type="hidden" id="agenda_consulta_folha_colaborador_pk">
+                        <div class='col-md-4'>
+                            <label for="ds_colaborador">Posto de Trabalho:&nbsp;</label>
+                            <select class="form-control form-control-sm chzn-select" id="leads_consulta_folha_pk" >
+                                <option></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class='row'>
+                        
+                        <div class='col-md-4'>
+                            <label for="ds_colaborador">Colaborador:&nbsp;</label>
+                            <select class="form-control form-control-sm chzn-select" id="colaborador_consulta_folha_pk" >
+                                <option></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class='row'>
+                        
+                        <div class='col-md-4'>
+                            <label for="ds_colaborador">Mês:&nbsp;</label>
+                            <select class="form-control form-control-sm chzn-select" id="ic_consulta_folha_mes" >
+                                <option value="01">Janeiro</option>
+                                <option value="02">Fevereiro</option>
+                                <option value="03">Março</option>
+                                <option value="04">Abril</option>
+                                <option value="05">Maio</option>
+                                <option value="06">Junho</option>
+                                <option value="07">Julho</option>
+                                <option value="08">Agosto</option>
+                                <option value="09">Setembro</option>
+                                <option value="10">Outubro</option>
+                                <option value="11">Novembro</option>
+                                <option value="12">Dezembro</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class='row'>
+                        <div class='col-md-4'>
+                            <label for="ds_colaborador">Ano:&nbsp;</label>
+                            <select class="form-control form-control-sm chzn-select" id="ic_consulta_folha_ano" name="ic_consulta_folha_ano">
+                                <option></option>
+                            </select>
+                        </div>
+                    </div>
+                    <br>
+                    
+                        <div class='row' style"text-align:center" >
+                            <div class='col-md-12' >
+                                <label for="ds_colaborador"><b>Apontamento</b>&nbsp;</label>
+                                <div style="
+                                        width: 35px;
+                                        height: 35px;
+                                        background-color: #ADD8E6; /* Azul */
+                                        border-radius: 50%; /* Faz a div ficar redonda */
+                                    
+                                    "></div>
+                            </div>
+                        </div>
+                        <br>
+                        <br>
+                    <div id="printableAreaRelogio">
+                        <div id="grid_consulta_folha_ponto"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade modal-wide modal-fullscreen" tabindex="-1" role="dialog" aria-labelledby="meuModalLabel" aria-hidden="true" id="janela_ponto_diario">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 style="color:#FF5403">
+                    Ponto do dia <span id="date"></span>
+                </h6>
+            </div>
+            <form id="form_colaborador_ponto_diario">
+                <div class="row">
+                    <div class="col-md-12">
+                        <span id="grid_ponto_diario"></span>
+                    </div>
+                </div>
+            </form>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" id="cmdFecharPontoDiario" data-dismiss="modal">Fechar</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,61 @@
+services:
+  rh-restaurante-tilapia-php:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: rh-restaurante-tilapia-php
+    platform: linux/amd64
+    working_dir: /var/www/html
+    volumes:
+      - ../app:/var/www/html
+    networks:
+      - rh-restaurante-tilapia-net
+
+  rh-restaurante-tilapia-nginx:
+    image: nginx:1.24-alpine
+    container_name: rh-restaurante-tilapia-nginx
+    platform: linux/amd64
+    ports:
+      - "8095:80"
+    volumes:
+      - ../app:/var/www/html:ro
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - rh-restaurante-tilapia-php
+    networks:
+      - rh-restaurante-tilapia-net
+
+  rh-restaurante-tilapia-mysql:
+    image: mysql:5.7
+    container_name: rh-restaurante-tilapia-mysql
+    platform: linux/amd64
+    command:
+      - --sql-mode=
+      - --default-time-zone=America/Sao_Paulo
+    ports:
+      - "3318:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: "SENHA"
+      MYSQL_DATABASE: "wwgepr_rest_tilapia"
+      MYSQL_USER: "wwgepr_rest_tilapia"
+      MYSQL_PASSWORD: "gepros15082008"
+      TZ: "America/Sao_Paulo"
+    volumes:
+      - rh_restaurante_tilapia_mysql_data:/var/lib/mysql
+      - ./docker/mysql/conf.d:/etc/mysql/conf.d:ro
+      - ../database:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin --no-defaults ping -h 127.0.0.1 -uroot -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+    networks:
+      - rh-restaurante-tilapia-net
+
+networks:
+  rh-restaurante-tilapia-net:
+    driver: bridge
+
+volumes:
+  rh_restaurante_tilapia_mysql_data:

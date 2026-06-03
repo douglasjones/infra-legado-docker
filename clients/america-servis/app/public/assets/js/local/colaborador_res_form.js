@@ -2018,6 +2018,26 @@ function fcPreencherPeriodoReloginho() {
     $("#dt_fim_reloginho").val(formatDate(ultimoDia));
 }
 
+function inicializarDatepickerReloginho() {
+    var opcoesDatepickerReloginho = {
+        format: 'dd/mm/yyyy',
+        language: "pt-BR",
+        autoclose: true,
+        todayHighlight: true,
+        todayBtn: "linked",
+        container: '#consulta_folha_ponto'
+    };
+
+    $('#dt_ini_reloginho').datepicker('destroy').datepicker(opcoesDatepickerReloginho);
+    $('#dt_fim_reloginho').datepicker('destroy').datepicker(opcoesDatepickerReloginho);
+
+    $('#dt_ini_reloginho, #dt_fim_reloginho')
+        .off('focus.reloginhoDatepicker click.reloginhoDatepicker')
+        .on('focus.reloginhoDatepicker click.reloginhoDatepicker', function () {
+            $(this).datepicker('show');
+        });
+}
+
 $(document).ready(function () {
 
     var arrCarregar = permissao("colaborador", "cons");
@@ -2051,30 +2071,19 @@ $(document).ready(function () {
     $(document).on('click', '#print_folha_all', fcPrintAllByPeriodoColaborador); 
     $(document).on('click', '#cmdCarregarReloginho', fcCarregarReloginho); 
     
-     $('#dt_ini_reloginho').datepicker({
-        format: 'dd/mm/yyyy',
-        language: "pt-BR",
-        autoclose: true,
-        todayHighlight: true,
-        todayBtn: "linked"
-    });
+    inicializarDatepickerReloginho();
 
     $("#dt_ini_reloginho").keypress(function () {
         mascara(this, mdata);
-    });
-
-    $('#dt_fim_reloginho').datepicker({
-        format: 'dd/mm/yyyy',
-        language: "pt-BR",
-        autoclose: true,
-        todayHighlight: true,
-        todayBtn: "linked"
     });
 
     $("#dt_fim_reloginho").keypress(function () {
         mascara(this, mdata);
     });
     fcPreencherPeriodoReloginho();
+    $('#consulta_folha_ponto').on('shown.bs.modal', function () {
+        inicializarDatepickerReloginho();
+    });
     $("#leads_consulta_folha_pk").change(function () {
         //fcCarregarColaboradorFolhaPonto();
 

@@ -1,0 +1,77 @@
+services:
+  mysql:
+    image: mysql:5.7.44
+    platform: linux/amd64
+    container_name: vistoriza-legado-mysql
+    command:
+      - --defaults-file=/etc/mysql/conf.d/vistoriza.cnf
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: gepros1com_vistoriza
+      MYSQL_USER: gepros1com_vistoriza
+      MYSQL_PASSWORD: gepros15082008
+      TZ: America/Sao_Paulo
+    ports:
+      - "33076:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./docker/mysql/vistoriza.cnf:/etc/mysql/conf.d/vistoriza.cnf:ro
+      - ./database:/dump:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h127.0.0.1 -uroot -proot --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 60
+      start_period: 60s
+    restart: unless-stopped
+
+  web:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: vistoriza-legado-web
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      APACHE_DOCUMENT_ROOT: /var/www/html/public
+      APACHE_SERVER_NAME: vistoriza.local
+      APACHE_DOCS_ROOT: /var/www/html/app/src/docs
+      MYSQL_TCP_HOST: mysql
+      TZ: America/Sao_Paulo
+    ports:
+      - "8087:80"
+    volumes:
+      - ./source/vistoriza:/var/www/html
+      - ./docker/apache/vhost.conf:/etc/apache2/templates/vhost.conf:ro
+      - ./docker/php/php.ini:/usr/local/etc/php/conf.d/zz-vistoriza.ini:ro
+      - web_sessions:/var/lib/php/sessions
+    restart: unless-stopped
+
+  colaborador:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: vistoriza-legado-colaborador
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      APACHE_DOCUMENT_ROOT: /var/www/html/geprosColaborador/public
+      APACHE_SERVER_NAME: ecol.gepros1.com.br
+      APACHE_DOCS_ROOT: /var/www/html/geprosColaborador/app/src/docs
+      MYSQL_TCP_HOST: mysql
+      TZ: America/Sao_Paulo
+    ports:
+      - "8088:80"
+    volumes:
+      - ./source/vistoriza:/var/www/html
+      - ./docker/apache/vhost.conf:/etc/apache2/templates/vhost.conf:ro
+      - ./docker/php/php.ini:/usr/local/etc/php/conf.d/zz-vistoriza.ini:ro
+      - colaborador_sessions:/var/lib/php/sessions
+    restart: unless-stopped
+
+volumes:
+  mysql_data:
+  web_sessions:
+  colaborador_sessions:
