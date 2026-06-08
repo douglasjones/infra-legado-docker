@@ -4,16 +4,24 @@ var click_id = 0;
 function fcCarregarGrid(){
     var ds_lead_clientes = $("#leads_clientes_pk option:selected").text();
     var ds_lead = $("#leads_pk option:selected").text();
-    /*if($("#leads_clientes_pk").val()=="" && $("#leads_pk").val()==""){
-        utilsJS.toastNotify(false,'Informe Cliete ou Lead!');
+    var dt_ini_ronda = $.trim($("#dt_ini_ronda").val());
+    var dt_fim_ronda = $.trim($("#dt_fim_ronda").val());
+
+    if ($("#leads_clientes_pk").val() === "" && $("#leads_pk").val() === "" && dt_ini_ronda === "" && dt_fim_ronda === "") {
+        utilsJS.toastNotify(false, 'Informe ao menos Cliente, Posto de Trabalho ou periodo da ronda.');
         return false;
-    }*/
+    }
+
+    if ((dt_ini_ronda !== "" && dt_fim_ronda === "") || (dt_ini_ronda === "" && dt_fim_ronda !== "")) {
+        utilsJS.toastNotify(false, 'Informe Data Inicial e Data Final da ronda.');
+        return false;
+    }
 
     objParametros = {
         leads_clientes_pk:$("#leads_clientes_pk").val(),
         leads_pk:$("#leads_pk").val(),
-        dt_ini_ronda:$("#dt_ini_ronda").val(),
-        dt_fim_ronda:$("#dt_fim_ronda").val(),
+        dt_ini_ronda:dt_ini_ronda,
+        dt_fim_ronda:dt_fim_ronda,
         ds_lead:ds_lead,
         ds_lead_clientes:ds_lead_clientes
     }

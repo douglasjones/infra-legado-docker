@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\Utils\Json;
 use App\Model\Ronda;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -20,8 +19,8 @@ final class RondaController extends BaseController {
             $dt_ini_ronda = isset($data['dt_ini_ronda'])? $data['dt_ini_ronda']: "";
             $dt_fim_ronda = isset($data['dt_fim_ronda'])? $data['dt_fim_ronda']: "";
 
-            $retorno = (new Ronda($this->pdo))->relRondas($leads_pk,$leads_clientes_pk,$dt_ini_ronda,$dt_fim_ronda);
-            json::run($retorno->status,$retorno->data,$retorno->message);
+            $retorno = (new Ronda($this->pdo))->relRondas($leads_pk,$leads_clientes_pk,$dt_ini_ronda,$dt_fim_ronda, $data);
+            echo json_encode($retorno, JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK | JSON_UNESCAPED_UNICODE);
             return $response->withStatus(200)->withHeader('Content-Type', 'application/json');
         } catch (Throwable $th) {
             return $response->withJson((object)[

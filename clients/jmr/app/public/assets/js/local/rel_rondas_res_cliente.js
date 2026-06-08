@@ -5,20 +5,20 @@ var arrMes = [];
 
 function fcCarregarGridRonda(){
     var objParametros = {
-        "leads_clientes_pk":$("#ds_lead_ronda").val(),
-        "leads_pk":$("#ds_lead_clientes_ronda").val(),
-        "dt_ini_ronda":$("#dt_ini_ronda").val(),
-        "dt_fim_ronda":$("#dt_fim_ronda").val(),
+        "leads_clientes_pk":$.trim($("#ds_lead_clientes_ronda").val()),
+        "leads_pk":$.trim($("#ds_lead_ronda").val()),
+        "dt_ini_ronda":$.trim($("#dt_ini_ronda").val()),
+        "dt_fim_ronda":$.trim($("#dt_fim_ronda").val()),
     };
 
     var v_url = routes_api("ronda", "relRondas", objParametros);
     tblResultado = $("#tblResultado").DataTable({
         searching: false,
-        paging: false,
+        paging: true,
         scrollX: true,
-        pageLength: 10,
-        aLengthMenu: [10, 25, 50, 100],
-        iDisplayLength: 10,
+        pageLength: 100,
+        aLengthMenu: [50, 100, 250, 500],
+        iDisplayLength: 100,
         processing: false,
         serverSide: true,
         ajax: v_url,
