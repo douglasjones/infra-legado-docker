@@ -204,7 +204,10 @@ function fcFormatarDados(){
 
 
 function gerarQrCode(id,local){
-    var urlComEspacos = "https://gepros1.com.br/crm/facilities/gtronda/view/ronda_cad_form.php?posto="+$("#ds_lead").val()+"&local="+local;
+    var dsDominio = $("#ds_dominio").val() || "jmr";
+    var posto = encodeURIComponent($("#ds_lead").val());
+    var localPonto = encodeURIComponent(local);
+    var urlComEspacos = "https://gepros1.com.br/crm/facilities/" + dsDominio + "/view/ronda_cad_form.php?posto=" + posto + "&local=" + localPonto;
     // Criar um elemento de âncora
     var linkElement = document.createElement("a");
     linkElement.href = urlComEspacos; // Definir o atributo href com a URL

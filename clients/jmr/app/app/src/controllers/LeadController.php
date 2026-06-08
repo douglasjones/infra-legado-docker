@@ -97,7 +97,8 @@ final class LeadController extends BaseController {
             $ds_lead = isset($data['ds_lead'])? $data['ds_lead'] : "";
             $local = isset($data['local'])? $data['local'] : "";
             $pk = isset($data['pk'])? $data['pk'] : "";
-            $this->view->render($response, 'lead/qrCode.twig',array('pk'=>$pk,'ds_lead'=>$ds_lead));
+            $ds_dominio = isset($_SESSION['session_user']['par11']) ? $_SESSION['session_user']['par11'] : "jmr";
+            $this->view->render($response, 'lead/qrCode.twig',array('pk'=>$pk,'ds_lead'=>$ds_lead, 'ds_dominio'=>$ds_dominio));
         } catch (Throwable $th) {
             return $response->withJson((object)[
                 'error' => $th->getMessage()

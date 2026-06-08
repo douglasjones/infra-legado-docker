@@ -7,11 +7,6 @@ function fcCarregarGrid(){
     var dt_ini_ronda = $.trim($("#dt_ini_ronda").val());
     var dt_fim_ronda = $.trim($("#dt_fim_ronda").val());
 
-    if ($("#leads_clientes_pk").val() === "" && $("#leads_pk").val() === "" && dt_ini_ronda === "" && dt_fim_ronda === "") {
-        utilsJS.toastNotify(false, 'Informe ao menos Cliente, Posto de Trabalho ou periodo da ronda.');
-        return false;
-    }
-
     if ((dt_ini_ronda !== "" && dt_fim_ronda === "") || (dt_ini_ronda === "" && dt_fim_ronda !== "")) {
         utilsJS.toastNotify(false, 'Informe Data Inicial e Data Final da ronda.');
         return false;
