@@ -57,7 +57,7 @@ $(document).ready(function () {
                     var log = JSON.parse(response.responseText);
                     utilsJS.loaded();
                     if(log.status == false){
-                        sweetMensagem('warning', log.message);
+                        utilsJS.sweetMensagem(false, log.message || 'Nao foi possivel alterar a senha');
                     }else{
                         window.location.href="menu/principal";
                     }
@@ -71,6 +71,8 @@ $(document).ready(function () {
     //Make authentication
 });
 function fcLogar(){
+    $("#login").val($.trim($("#login").val()));
+    $("#password").val($.trim($("#password").val()));
     utilsJS.loading('Efetuando Login...');
     $.ajax({
         type: 'POST',
@@ -86,8 +88,8 @@ function fcLogar(){
                     
                     return false;
                 }
-                else if(log.data == ''){
-                    sweetMensagem('warning', log.message);
+                else if(log.status === false){
+                    utilsJS.sweetMensagem(false, log.message || 'Credenciais invalidas');
                 }else{
                     window.location.href="menu/principal";
                 }
@@ -99,6 +101,8 @@ function fcLogar(){
 }
 
 function fcVerificarTrocaSenha(){
+    $("#login").val($.trim($("#login").val()));
+    $("#password").val($.trim($("#password").val()));
     $.ajax({
         type: 'POST',
         url: '/api/auth/verificarTrocaSenha',
@@ -108,7 +112,7 @@ function fcVerificarTrocaSenha(){
                 var log = JSON.parse(response.responseText);
                 
                 if(log.data == 0){
-                    sweetMensagem('warning','Credenciais inválidas');
+                    utilsJS.sweetMensagem(false, 'Credenciais invalidas');
                 }else{
                     $("#janela_modal_nova_senha").modal("show");
                     $("#ds_login_nova_senha").val($("#login").val());

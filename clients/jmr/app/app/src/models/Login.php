@@ -19,7 +19,7 @@ class Login {
 		$retorno->status = false;
 		$retorno->data = [];
 
-		//$data = Util::trimInArray($data);
+		$data = is_array($data) ? Util::trimInArray($data) : [];
 		
 
 		/* VALID FORM */
@@ -157,7 +157,7 @@ class Login {
 		$retorno->status = false;
 		$retorno->data = [];
 
-		//$data = Util::trimInArray($data);
+		$data = is_array($data) ? Util::trimInArray($data) : [];
 		
 
 		/* VALID FORM */

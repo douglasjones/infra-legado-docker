@@ -14,11 +14,8 @@ final class LoginController extends BaseController {
 
 	public function login(Request $request, Response $response, $args) {
         try{
-            // Pega o horário atual no formato H:i:s
             session_destroy();
             Session::cleanSession();
-            $entity = new Login($this->pdo);
-            $retorno = $entity->login($request->getParsedBody());
             $this->view->render($response, 'login/login.twig');
             return $response;
         } catch (Throwable $th) {
