@@ -13,8 +13,11 @@ window.location.getQueryParams = function(query) {
     
     var arrRetorno = [];
     for(i = 0; i < arrLinhas.length; i++){
+        if(arrLinhas[i].trim() == ""){
+            continue;
+        }
         arrCampos = arrLinhas[i].split("=");
-        arrRetorno[arrCampos[0].trim()] = arrCampos[1].trim();
+        arrRetorno[arrCampos[0].trim()] = (arrCampos[1] || "").trim();
     }
     
     return arrRetorno;
