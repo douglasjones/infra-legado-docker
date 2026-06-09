@@ -4,17 +4,29 @@ window.location.getQueryParams = function(query) {
         query = window.location.search
     }
     
-    if(query.trim() == ""){
+    if(typeof query !== 'string'){
+        return [];
+    }
+
+    query = query.trim();
+
+    if(query === ""){
         return [];
     }
     
-    query = decodeURIComponent(query.trim().substr(1,query.length));
+    query = decodeURIComponent(query.substr(1,query.length));
     arrLinhas = query.split("&");
     
     var arrRetorno = [];
     for(i = 0; i < arrLinhas.length; i++){
+        if(arrLinhas[i].trim() === ""){
+            continue;
+        }
         arrCampos = arrLinhas[i].split("=");
-        arrRetorno[arrCampos[0].trim()] = arrCampos[1].trim();
+        if(arrCampos[0] === undefined || arrCampos[0].trim() === ""){
+            continue;
+        }
+        arrRetorno[arrCampos[0].trim()] = arrCampos[1] !== undefined ? arrCampos[1].trim() : "";
     }
     
     return arrRetorno;

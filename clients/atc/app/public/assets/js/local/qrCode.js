@@ -38,8 +38,12 @@ function fcCarregarQRCode(pk){
                         var arrCarregar = carregarController("lead", "listarQRCode", objParametros);
 
                         var html = "";
-                        if (!arrCarregar || !arrCarregar.data || arrCarregar.data.length === 0) {
-                            utilsJS.toastNotify(false, 'Nenhum ponto de QR Code encontrado para este posto de trabalho.');
+                        if (!arrCarregar || arrCarregar.status !== true) {
+                            utilsJS.toastNotify(false, 'Falhou ao carregar os pontos de QR Code deste posto de trabalho.');
+                            return false;
+                        }
+
+                        if (!arrCarregar.data || arrCarregar.data.length === 0) {
                             return false;
                         }
                         for (var i = 0; i < arrCarregar.data.length; i++) {
@@ -81,7 +85,7 @@ function fcCarregarQRCode(pk){
                             
                             // Gera o QR Code
                             var id = "qrCode" + arrCarregar.data[i]['pk'];
-                            gerarQrCode(id, arrCarregar.data[i]['pk']);
+                            gerarQrCode(id, $("#ds_lead").val(), arrCarregar.data[i]['ds_ponto']);
 
                             // Verifica se é o último item do par e adiciona a quebra de página depois
                             if ((i + 1) % 2 === 0 && i !== arrCarregar.data.length - 1) {
@@ -208,12 +212,12 @@ function fcFormatarDados(){
 
 
 
-function gerarQrCode(id, qrCodePk){
+function gerarQrCode(id, dsLead, dsPonto){
     if (typeof qrcode === 'undefined') {
         utilsJS.toastNotify(false, 'Biblioteca de QR Code não carregada.');
         return false;
     }
-    var urlComEspacos = window.location.origin + "/ronda/registrar?qr=" + encodeURIComponent(qrCodePk);
+    var urlComEspacos = "https://gepros1.com.br/crm/facilities/atc/view/ronda_cad_form.php?posto=" + encodeURIComponent(dsLead) + "&local=" + encodeURIComponent(dsPonto);
     // Criar um elemento de âncora
     var linkElement = document.createElement("a");
     linkElement.href = urlComEspacos; // Definir o atributo href com a URL

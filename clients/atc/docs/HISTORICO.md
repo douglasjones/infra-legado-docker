@@ -8,6 +8,16 @@ Este arquivo registra, em ordem cronologica, as tarefas concluidas neste cliente
 
 Corrigir o relatorio de Rondas no ATC, que apresentava erro de `Invalid JSON response` na tela de resultado e, em seguida, passou a bloquear a geracao quando as datas vinham vazias na pesquisa.
 
+### Solicitacao complementar
+
+Ajustar a geracao de QR Code em `Leads > Gerar QRCode` para usar o padrao legado com URL fixa de producao:
+
+```text
+https://gepros1.com.br/crm/facilities/atc/view/ronda_cad_form.php?posto=<posto>&local=<local>
+```
+
+Tambem foi necessario remover um erro de JavaScript na tela quando a URL vinha com `?&...` e tratar corretamente o caso em que o posto ainda nao possui pontos cadastrados.
+
 ### Causa raiz
 
 Foram identificados dois problemas no fluxo:
@@ -67,6 +77,50 @@ Ajuste:
 
 - Atualizado o versionamento do asset JS para `rel_rondas_pesq.js?v=16`, forcando o navegador a descartar cache antigo.
 
+Arquivo:
+
+- `app/public/assets/js/global/bestflow.js`
+
+Ajustes:
+
+- Corrigido o parser global de query string para suportar URLs com segmentos vazios, como `?&ds_lead=...&pk=...`.
+- Evitado erro de `trim()` em parametros indefinidos.
+
+Arquivo:
+
+- `app/public/assets/js/local/qrCode.js`
+
+Ajustes:
+
+- Alterada a geracao do QR Code para voltar ao padrao legado com URL fixa de producao:
+
+```text
+https://gepros1.com.br/crm/facilities/atc/view/ronda_cad_form.php?posto=<posto>&local=<local>
+```
+
+- O QR agora carrega:
+  - nome do posto de trabalho em `posto`
+  - descricao do ponto/local de ronda em `local`
+- Removido toast de erro quando o posto ainda nao possui pontos QR cadastrados, mantendo a tela vazia para inclusao manual.
+- Mantido toast apenas para falha real na API de carregamento.
+
+Arquivo:
+
+- `app/app/templates/lead/qrCode.twig`
+
+Ajuste:
+
+- Atualizado o versionamento do asset para `qrCode.js?v=19`.
+
+Arquivo:
+
+- `app/public/crm/facilities/atc/view/ronda_cad_form.php`
+
+Ajuste:
+
+- Criado arquivo de compatibilidade para o caminho legado do ATC.
+- O arquivo recebe `posto` e `local` pela query string e redireciona para `/ronda/legado`.
+
 ### Arquivos que precisam subir no VPS
 
 ```text
@@ -75,6 +129,10 @@ app/public/assets/js/local/rel_rondas_res.js
 app/public/assets/js/local/rel_rondas_pesq.js
 app/app/templates/relatorio/operacional/rel_rondas_pesq.twig
 app/app/templates/ocorrencia/relatorio/operacional/rel_rondas_pesq.twig
+app/public/assets/js/global/bestflow.js
+app/public/assets/js/local/qrCode.js
+app/app/templates/lead/qrCode.twig
+app/public/crm/facilities/atc/view/ronda_cad_form.php
 ```
 
 ### Validacoes locais executadas
@@ -112,6 +170,22 @@ Resultado:
 ```json
 {"status":true,"message":"Dados carregados com sucesso !","data":[]}
 ```
+
+Validacao do QR Code:
+
+- Confirmado que o posto `pk=3` nao possuia registros em `lead_ronda_qrcode`.
+- Confirmado que tambem nao havia historico legado em `ronda` para esse posto.
+- A tela passou a abrir sem erro JavaScript e sem toast indevido, pronta para inclusao manual de linhas.
+
+Validacao do arquivo legado ATC:
+
+```bash
+php -l app/public/crm/facilities/atc/view/ronda_cad_form.php
+```
+
+Resultado:
+
+- sem erros de sintaxe.
 
 ### Validacoes recomendadas no VPS
 
