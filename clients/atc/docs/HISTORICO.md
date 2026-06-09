@@ -2,6 +2,133 @@
 
 Este arquivo registra, em ordem cronologica, as tarefas concluidas neste cliente.
 
+## 2026-06-09
+
+### Solicitacao
+
+Corrigir o relatorio de Rondas no ATC, que apresentava erro de `Invalid JSON response` na tela de resultado e, em seguida, passou a bloquear a geracao quando as datas vinham vazias na pesquisa.
+
+### Causa raiz
+
+Foram identificados dois problemas no fluxo:
+
+1. A API `/api/ronda/relRondas` fazia consulta sem periodo obrigatorio e tentava carregar volume muito grande da tabela `ronda`, causando `Allowed memory size exhausted` e retornando HTML de erro no lugar do JSON esperado pelo DataTables.
+2. A tela de pesquisa nao inicializava as datas com valor padrao, entao a nova protecao do backend passou a exigir datas preenchidas sem oferecer um fluxo amigavel ao usuario.
+3. A tela de resultado estava reenviando os filtros errados, usando os campos de descricao em vez dos campos hidden com os PKs reais de cliente e posto.
+
+### Ajustes aplicados em arquivos
+
+Arquivo:
+
+- `app/app/src/models/Ronda.php`
+
+Ajustes:
+
+- Removido o `echo json_encode(...); exit(0);` direto do model.
+- Passado a retornar objeto estruturado para o controller.
+- Tornado o periodo de ronda obrigatorio no backend para evitar consulta sem filtro.
+- Refeito o filtro usando binds e PKs reais de cliente/posto:
+  - `ll.pk = :leads_clientes_pk`
+  - `l.pk = :leads_pk`
+- Mantido retorno JSON valido mesmo em cenario sem periodo informado.
+- Padronizado retorno com `COALESCE(...)` para evitar campos nulos no grid.
+
+Arquivo:
+
+- `app/public/assets/js/local/rel_rondas_res.js`
+
+Ajuste:
+
+- Corrigido o envio dos filtros na tela de resultado para usar:
+  - `#leads_clientes_pk`
+  - `#leads_pk`
+
+Em vez de:
+
+- `#ds_lead_clientes`
+- `#ds_lead`
+
+Arquivo:
+
+- `app/public/assets/js/local/rel_rondas_pesq.js`
+
+Ajustes:
+
+- Adicionada inicializacao automatica de `dt_ini_ronda` e `dt_fim_ronda` com a data atual ao abrir a tela.
+- Adicionada protecao para preencher ambas com a data atual quando os dois campos vierem vazios antes do envio.
+- Mantida validacao para impedir envio com apenas uma das datas preenchida.
+
+Arquivos:
+
+- `app/app/templates/relatorio/operacional/rel_rondas_pesq.twig`
+- `app/app/templates/ocorrencia/relatorio/operacional/rel_rondas_pesq.twig`
+
+Ajuste:
+
+- Atualizado o versionamento do asset JS para `rel_rondas_pesq.js?v=16`, forcando o navegador a descartar cache antigo.
+
+### Arquivos que precisam subir no VPS
+
+```text
+app/app/src/models/Ronda.php
+app/public/assets/js/local/rel_rondas_res.js
+app/public/assets/js/local/rel_rondas_pesq.js
+app/app/templates/relatorio/operacional/rel_rondas_pesq.twig
+app/app/templates/ocorrencia/relatorio/operacional/rel_rondas_pesq.twig
+```
+
+### Validacoes locais executadas
+
+Dentro do container `atc-php`:
+
+```bash
+php -l /var/www/html/app/src/models/Ronda.php
+```
+
+Resultado:
+
+- sem erros de sintaxe.
+
+Validacao da API sem datas:
+
+```bash
+curl -s 'http://127.0.0.1:8085/api/ronda/relRondas?leads_clientes_pk=%20&leads_pk=%20&dt_ini_ronda=&dt_fim_ronda='
+```
+
+Resultado:
+
+```json
+{"status":false,"message":"Informe a data inicial e final da ronda.","data":[]}
+```
+
+Validacao da API com datas:
+
+```bash
+curl -s 'http://127.0.0.1:8085/api/ronda/relRondas?leads_clientes_pk=%20&leads_pk=%20&dt_ini_ronda=09/06/2026&dt_fim_ronda=09/06/2026'
+```
+
+Resultado:
+
+```json
+{"status":true,"message":"Dados carregados com sucesso !","data":[]}
+```
+
+### Validacoes recomendadas no VPS
+
+Após publicar os arquivos:
+
+1. Abrir `Relatorios > Operacional > Rondas`.
+2. Confirmar que `Dt Ini Ronda` e `Dt Fim Ronda` carregam automaticamente com a data atual.
+3. Gerar o relatorio sem alterar os campos para validar o fluxo padrao.
+4. Gerar novamente filtrando por cliente/posto para validar os PKs corretos.
+
+No navegador, nao deve mais aparecer:
+
+```text
+DataTables warning: table id=tblResultado - Invalid JSON response
+Allowed memory size exhausted
+```
+
 ## 2026-05-13
 
 ### Solicitacao

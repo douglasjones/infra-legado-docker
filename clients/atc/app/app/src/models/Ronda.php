@@ -93,56 +93,67 @@ class Ronda {
     }
 
     public function relRondas($leads_pk,$leads_clientes_pk,$dt_ini_ronda,$dt_fim_ronda){
-        $retorno = new \StdClass; //Estrutura de retorno para controller
-        $retorno->status = false; //Retorno setado status como false
-        $retorno->data = []; //Retorno data setado como vazio
+        $retorno = new \StdClass;
+        $retorno->status = false;
+        $retorno->data = [];
+        $retorno->message = 'Nenhum dado encontrado.';
+        $retorno->iTotalDisplayRecords = 0;
+        $retorno->iTotalRecords = 0;
 
-        $sql=" select";
-        $sql.="    ll.ds_lead ds_cliente,";
-        $sql.="    r.leads_pk ds_lead,";
-        $sql.="    r.local_ronda_pk ds_local_ronda,";
-        $sql.="    date_format(r.dt_cadastro, '%d/%m/%Y')dt_ronda,";
-        $sql.="    date_format(r.dt_cadastro, '%H:%i:%s')hr_ronda,";
-        $sql.="    r.ds_ronda ds_obs";
-        $sql.=" from ronda r";
-        $sql.=" LEFT join leads l on r.leads_pk = l.ds_lead";
-        $sql.=" left join leads ll on l.leads_pai_pk = ll.pk";
-        $sql.=" where 1=1 ";
+        $leads_pk = trim((string) $leads_pk);
+        $leads_clientes_pk = trim((string) $leads_clientes_pk);
+        $dt_ini_ronda = trim((string) $dt_ini_ronda);
+        $dt_fim_ronda = trim((string) $dt_fim_ronda);
 
-        if($leads_clientes_pk!=" "){
-            if($leads_pk!=" "){
-                $sql.=" and (l.ds_lead LIKE '%".$leads_pk."%' OR
-                    ll.ds_lead LIKE '%".$leads_pk."%' )";
-                $sql.=" and (l.ds_lead LIKE '%".$leads_clientes_pk."%' OR
-                        ll.ds_lead LIKE '%".$leads_clientes_pk."%') ";
-            }
-            else{
-                $sql.=" and (l.ds_lead LIKE '%".$leads_clientes_pk."%' OR
-                    ll.ds_lead LIKE '%".$leads_clientes_pk."%' )    ";
-            }
-
-        }
-        if($leads_pk!=" "){
-            $sql.=" and (l.ds_lead LIKE '%".$leads_pk."%' OR
-                    ll.ds_lead LIKE '%".$leads_pk."%' )";
-        }
-        if($dt_ini_ronda!=""){
-            $sql.=" and r.dt_cadastro between '".Util::DataYMD($dt_ini_ronda)." 00:00:00' and '".Util::DataYMD($dt_fim_ronda)." 23:59:59'";
+        if ($dt_ini_ronda === '' || $dt_fim_ronda === '') {
+            $retorno->message = 'Informe a data inicial e final da ronda.';
+            return $retorno;
         }
 
-       
+        $sql = " select";
+        $sql .= "    COALESCE(ll.ds_lead, l.ds_lead, '') ds_cliente,";
+        $sql .= "    COALESCE(r.leads_pk, '') ds_lead,";
+        $sql .= "    COALESCE(r.local_ronda_pk, '') ds_local_ronda,";
+        $sql .= "    date_format(r.dt_cadastro, '%d/%m/%Y') dt_ronda,";
+        $sql .= "    date_format(r.dt_cadastro, '%H:%i:%s') hr_ronda,";
+        $sql .= "    COALESCE(r.ds_ronda, '') ds_obs";
+        $sql .= " from ronda r";
+        $sql .= " left join leads l on r.leads_pk = l.ds_lead";
+        $sql .= " left join leads ll on l.leads_pai_pk = ll.pk";
+        $sql .= " where r.dt_cadastro between :dt_ini_ronda and :dt_fim_ronda";
+
+        if (ctype_digit($leads_clientes_pk)) {
+            $sql .= " and ll.pk = :leads_clientes_pk";
+        }
+
+        if (ctype_digit($leads_pk)) {
+            $sql .= " and l.pk = :leads_pk";
+        }
+
+        $sql .= " order by r.dt_cadastro desc";
+
         $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':dt_ini_ronda', Util::DataYMD($dt_ini_ronda) . ' 00:00:00');
+        $stmt->bindValue(':dt_fim_ronda', Util::DataYMD($dt_fim_ronda) . ' 23:59:59');
+
+        if (ctype_digit($leads_clientes_pk)) {
+            $stmt->bindValue(':leads_clientes_pk', (int) $leads_clientes_pk, \PDO::PARAM_INT);
+        }
+
+        if (ctype_digit($leads_pk)) {
+            $stmt->bindValue(':leads_pk', (int) $leads_pk, \PDO::PARAM_INT);
+        }
+
         $stmt->execute();
         $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-        
+
         $retorno->data = $rows;
         $retorno->status = true;
-        $retorno->message = 'Dados Salvos com sucesso !';
+        $retorno->message = 'Dados carregados com sucesso !';
         $retorno->iTotalDisplayRecords = count($rows);
         $retorno->iTotalRecords = count($rows);
-    
-        echo json_encode($retorno);
-        exit(0);
+
+        return $retorno;
     }
 
 }

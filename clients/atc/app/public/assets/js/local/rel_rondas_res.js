@@ -5,8 +5,8 @@ var arrMes = [];
 
 function fcCarregarGrid(){
     var objParametros = {
-        "leads_clientes_pk":$("#ds_lead_clientes").val(),
-        "leads_pk":$("#ds_lead").val(),
+        "leads_clientes_pk":$("#leads_clientes_pk").val(),
+        "leads_pk":$("#leads_pk").val(),
         "dt_ini_ronda":$("#dt_ini_ronda").val(),
         "dt_fim_ronda":$("#dt_fim_ronda").val(),
     };         

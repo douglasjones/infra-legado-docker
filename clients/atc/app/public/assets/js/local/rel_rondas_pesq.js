@@ -4,16 +4,26 @@ var click_id = 0;
 function fcCarregarGrid(){
     var ds_lead_clientes = $("#leads_clientes_pk option:selected").text();
     var ds_lead = $("#leads_pk option:selected").text();
-    /*if($("#leads_clientes_pk").val()=="" && $("#leads_pk").val()==""){
-        utilsJS.toastNotify(false,'Informe Cliete ou Lead!');
+    var dtIniRonda = $("#dt_ini_ronda").val();
+    var dtFimRonda = $("#dt_fim_ronda").val();
+
+    if (dtIniRonda === "" && dtFimRonda === "") {
+        $('#dt_ini_ronda').datepicker('setDate', new Date());
+        $('#dt_fim_ronda').datepicker('setDate', new Date());
+        dtIniRonda = $("#dt_ini_ronda").val();
+        dtFimRonda = $("#dt_fim_ronda").val();
+    }
+
+    if (dtIniRonda === "" || dtFimRonda === "") {
+        utilsJS.toastNotify(false, "Informe a data inicial e final da ronda.");
         return false;
-    }*/
+    }
 
     objParametros = {
         leads_clientes_pk:$("#leads_clientes_pk").val(),
         leads_pk:$("#leads_pk").val(),
-        dt_ini_ronda:$("#dt_ini_ronda").val(),
-        dt_fim_ronda:$("#dt_fim_ronda").val(),
+        dt_ini_ronda:dtIniRonda,
+        dt_fim_ronda:dtFimRonda,
         ds_lead:ds_lead,
         ds_lead_clientes:ds_lead_clientes
     }
@@ -68,7 +78,7 @@ $(document).ready(function () {
         todayHighlight: true,
         todayBtn: "linked",
         minDate: 0
-    }).datepicker(); 
+    }).datepicker("setDate", new Date()); 
 
     $("#dt_ini_ronda").keypress(function(){
         mascara(this,mdata);
@@ -80,7 +90,7 @@ $(document).ready(function () {
         todayHighlight: true,
         todayBtn: "linked",
         minDate: 0
-    }).datepicker(); 
+    }).datepicker("setDate", new Date()); 
 
     $("#dt_fim_ronda").keypress(function(){
         mascara(this,mdata);
